@@ -1,0 +1,111 @@
+// import font
+@font-face {
+	font-family: 'Butler-Regular';
+	src: url("/font/Butler_Regular.otf") format("opentype");
+}
+
+// TYPOGRAPHY STYLES
+html{
+	font-size: 62.5% !important;
+}
+
+body{
+	font-size: 1.2rem;
+	font-family: $mainFont;
+	color: $almostBlack;
+}
+
+h1{
+	font-family: $specialFont;
+	font-size: 3.8rem;
+	letter-spacing: 1.5px;
+}
+
+h2{
+	font-family: $headingFont;
+	font-size: 2.5rem;
+	font-weight: 400;
+}
+
+h3{
+	font-family: $headingFont;
+	font-size: 1.6rem;
+	font-weight: 600;
+	color: $nearBlack;
+}
+
+h4{
+	font-size: 1.5rem;
+	color: $darkGrey;
+	font-style: italic;
+	font-weight: normal;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+p{
+	font-size: 1.4rem;
+	line-height: 20px;
+	font-weight: 300;
+}
+
+p.small{
+	font-size: 1.2rem;
+	line-height: 15px;
+}
+
+@media (max-width: 600px){
+	h1{
+		font-size: 3rem;
+	}
+	
+	h2{
+		font-size: 2rem;
+	}
+	
+	h3{
+		font-size: 1.5rem;
+	}
+}
+
+// disable default link look
+a:link{
+	color: $almostBlack;
+	text-decoration: none;
+}
+a:visited {
+    color: $almostBlack;
+}
+
+input {
+	font-size: 1.5rem;
+	border : 1px solid $darkGrey;
+}
+
+input[type="file"]{
+	position: fixed; 
+	top: -100em;
+}
+
+// centering text
+.center{
+	text-align: center;
+}
+
+.right-align{
+	text-align: right;
+}
+
+.title{
+	padding-bottom: 5px;
+	border-bottom: solid 1px $darkGrey;
+	margin: 20px 0 5px 0;
+}
+
+.absolute_parent{
+	position: relative;
+}
+
+.round_border{
+	border-radius: 50%;
+}
