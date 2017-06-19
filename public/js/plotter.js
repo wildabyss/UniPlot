@@ -1,6 +1,7 @@
 var plotter = {
 	base_canvas_width: 1000,
 	base_label: 20,
+	canvas_offset: 15,
 	
 	refit: function(){
 		var hor_res = $("canvas.plot_main").width();
@@ -33,52 +34,65 @@ var plotter = {
 	},
 	
 	drawAxes: function(canvas_container, minX, maxX, xlabel, minY, maxY, ylabel){
+		// offset from the canvas
+		var offset = plotter.canvas_offset;
+		
 		var main_canvas = $(canvas_container).find("canvas.plot_main")[0];
-		var hor_res = main_canvas.width;
-		var vert_res = main_canvas.height;
+		var hor_res = main_canvas.width, hor_res_with_offset = hor_res - offset*2;
+		var vert_res = main_canvas.height, vert_res_with_offset = vert_res - offset*2;
+		
+		// canvas context
+		var ctx = main_canvas.getContext('2d');
 
 		/* draw grids in main plot area */
-		
-		var ctx = main_canvas.getContext('2d');
+
+		// draw bounding box
 		ctx.beginPath();
+		ctx.rect(offset, offset, hor_res_with_offset, vert_res_with_offset);
+		ctx.lineWidth=1;
+		ctx.setLineDash([]);
+		ctx.stroke();
 		
 		// draw vertical grid
+		ctx.beginPath();
 		var hor_n = 10;
-		var hor_step = hor_res/hor_n;
-		for (var x=hor_step; x<hor_res; x+=hor_step){
-			ctx.moveTo(x, 0);
-			ctx.lineTo(x, vert_res);
+		var hor_step = hor_res_with_offset/hor_n;
+		for (var x=hor_step+offset; x<=hor_res_with_offset; x+=hor_step){
+			ctx.moveTo(x, offset);
+			ctx.lineTo(x, offset+vert_res_with_offset);
 		}
 		
 		// draw horizontal grid
 		var vert_n = 4;
-		var vert_step = vert_res/vert_n;
-		for (var y=vert_step; y<vert_res; y+=vert_step){
-			ctx.moveTo(0, y);
-			ctx.lineTo(hor_res, y);
+		var vert_step = vert_res_with_offset/vert_n;
+		for (var y=vert_step+offset; y<=vert_res_with_offset; y+=vert_step){
+			ctx.moveTo(offset, y);
+			ctx.lineTo(offset+hor_res_with_offset, y);
 		}
 		
-		ctx.lineWidth=1;
 		ctx.setLineDash([2, 2]);
 		ctx.stroke();
+		
+		
 		
 		/* draw x-axis labels */
 		
 		// font size
-		var label_font = Math.max(14,Math.floor(this.base_label/this.base_canvas_width*hor_res));
+		var label_font = 14;
 		
 		var bottom_canvas = $(canvas_container).find("canvas.plot_bottom")[0];
 		ctx = bottom_canvas.getContext('2d');
 		
 		ctx.font = label_font+"px Arial";
+		ctx.textAlign = "center";
 		for (var i=0; i<=hor_n; i++){
-			var x_loc = i*hor_step;
+			var x_loc = i*hor_step + offset;
 			var x_tick = i*(maxX-minX)/hor_n;
 			
-			ctx.fillText(x_tick,x_loc,label_font);
+			ctx.fillText(x_tick,x_loc,label_font/2);
 		}
 		
-		ctx.fillText(xlabel,0,label_font*2);
+		ctx.fillText(xlabel,hor_res/2,label_font*2);
 	},
 	
 	redraw: function(){
@@ -88,7 +102,8 @@ var plotter = {
 		for (var i=0; i<containers.length; i++){
 			plotter.drawAxes(containers[i], 0, 100, 'time (s)', -50, 50, '');
 		}
-	}
+	},
+
 }
 
 $(document).ready(function(){
