@@ -111,14 +111,9 @@ header{
 
 main{
 	margin-top: 10px;
+	overflow: auto;
+	height: auto;
 	
 	flex: 1;
 }
 
-.canvas_container{
-	width:100%;
-	
-	canvas{
-		width: 100%;
-	}
-}
