@@ -1,11 +1,12 @@
 var plotter = {
 	base_canvas_width: 1000,
 	base_label: 20,
-	canvas_offset: 15,
+	canvas_height_ratio: 3,
+	canvas_offset: 40,
 	
 	refit: function(){
 		var hor_res = $("canvas.plot_main").width();
-		var vert_res = hor_res/3;
+		var vert_res = hor_res/plotter.canvas_height_ratio;
 		
 		var canvases = $("canvas.plot_main");
 		for (var i=0; i<canvases.length; i++){
@@ -13,24 +14,6 @@ var plotter = {
 			canvases[i].height = vert_res;
 		}
 		canvases.height(vert_res);
-		var lefts = $("canvas.plot_left");
-		var rights = $("canvas.plot_right");
-		lefts.height(vert_res);
-		rights.height(vert_res);
-		for (var i=0; i<lefts.length; i++){
-			lefts[i].height = vert_res;
-			rights[i].height = vert_res;
-		}
-		
-		var bottom_height = vert_res/3;
-		$("div.plot_left").height(bottom_height);
-		$("div.plot_right").height(bottom_height);
-		var canvas_bottom = $("canvas.plot_bottom");
-		canvas_bottom.height(vert_res/3);
-		for (var i=0; i<canvas_bottom.length; i++){
-			canvas_bottom[i].width = hor_res;
-			canvas_bottom[i].height = bottom_height;
-		}
 	},
 	
 	drawAxes: function(canvas_container, minX, maxX, xlabel, minY, maxY, ylabel){
@@ -80,7 +63,7 @@ var plotter = {
 		// font size
 		var label_font = 14;
 		
-		var bottom_canvas = $(canvas_container).find("canvas.plot_bottom")[0];
+		/*var bottom_canvas = $(canvas_container).find("canvas.plot_bottom")[0];
 		ctx = bottom_canvas.getContext('2d');
 		
 		ctx.font = label_font+"px Arial";
@@ -91,8 +74,8 @@ var plotter = {
 			
 			ctx.fillText(x_tick,x_loc,label_font/2);
 		}
-		
-		ctx.fillText(xlabel,hor_res/2,label_font*2);
+		*
+		ctx.fillText(xlabel,hor_res/2,label_font*2);*/
 	},
 	
 	redraw: function(){

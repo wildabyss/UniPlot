@@ -1,28 +1,10 @@
 div.plot_container{
 	width: 100%;
 	
-	div.plot_row{
-		padding: 0;
-	
-		.plot_left{
-			display: inline-block;
-			width: 7%;
-		}
-		.plot_right{
-			display: inline-block;
-			width: 7%;
-		}
-		.plot_bottom{
-			display: inline-block;
-			height: 50px;
-			width: 84%;
-		}
-		.plot_main{
-			display: inline-block;
-			height: 500px;
-			width: 84%;
-			/*border: 1px solid black;*/
-		}
+	.plot_main{
+		display: inline-block;
+		height: 500px;
+		width: 100%;
 	}
 }
 
