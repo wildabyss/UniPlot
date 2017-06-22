@@ -13,7 +13,9 @@
 	<body>
 		<script src="/js/jquery.min.js"></script>
 		<script src="/js/jquery-ui.min.js"></script>
+		<script src="/js/utils.js"></script>
 		<script src="/js/basic-ui.js"></script>
+		<script src="/js/plot_data.js"></script>
 		<script src="/js/plotter.js"></script>
 		
 		<div id="haze"></div>
@@ -26,7 +28,8 @@
 					<li><button class="blue" id="btn_add_data">Data</button></li>
 					<li><button class="blue" id="btn_add_data">Load</button></li>
 					<li><button class="blue" id="btn_save">Save</button></li>
-					<li><button class="teal" id="btn_save">Annotate</button></li>
+					<li><button class="teal" id="btn_annotate">Annotate</button></li>
+					<li><button class="teal" id="btn_zoom">Zoom</button></li>
 				</ul>
 				
 				<ul id="mobile_menu">
@@ -37,8 +40,5 @@
 				</ul>
 				
 			</header>
-			<nav class="mobile_menu">
-				
-			</nav>
 			
 			<main>
