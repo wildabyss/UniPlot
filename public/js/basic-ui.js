@@ -27,6 +27,22 @@ var restoreScroll = function(){
 };
 
 
+var modal_preconstruction = function(){
+	$('#btn_plots_management').click(function(){
+		// TEST ONLY
+		Plotter.data_array.push(new PlotData(''));
+		$('main').append('<div class="plot_container">\
+			<canvas class="plot_main" width="5" height="5"></canvas>\
+		</div>');
+		Plotter.redraw();
+		
+		
+	});
+	
+	$("input[type='radio']").checkboxradio();
+}
+
+
 $(document).ready(function(){
 	// small screen user menu trigger
 	$('#mobile_menu_trigger').click(function(e){
@@ -38,6 +54,9 @@ $(document).ready(function(){
 	$('html').click(function() {
 		hideMobileMenu();
 	});
+	
+	modal_preconstruction();
+	
 	
 	// data button
 	$('.btn_data').click(function(){

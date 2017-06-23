@@ -294,7 +294,7 @@ var Plotter = (function(){
 
 
 $(document).ready(function(){
-	var p_data = new PlotData('Surface Plot 1');
+	/*var p_data = new PlotData('Surface Plot 1');
 	Plotter.data_array.push(p_data);
 	// test data for now
 	p_data.addData('time', [0, 10, 20, 30], 's', true);
@@ -309,13 +309,9 @@ $(document).ready(function(){
 	p_data.addData('ail', [0, 15, 50, 30], 'deg', true);
 	p_data.addData('elv', [0, 80, -20, 30], 'deg', true);
 	p_data.addData('stab', [0, -5, -7, -5], 'deg', false);
+	*/
 	
-	
-	
-	Plotter.redraw();
-	
-	Plotter.zoom_horizontal([12.5, 25]);
-	Plotter.zoom_vertical(0, [0, 5], [-7, -2.5]);
+
 	
 	$(window).resize(function(){
 		Plotter.redraw();
