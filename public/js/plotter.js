@@ -43,6 +43,7 @@ var Plotter = (function(){
 		}
 		canvases.height(vert_res);
 	};
+
 	
 	var plot = function(canvas_container, plot_data){
 		// parse plot_data
@@ -69,13 +70,68 @@ var Plotter = (function(){
 		
 		// canvas context
 		var ctx = main_canvas.getContext('2d');
-		ctx.strokeStyle = '#999999';
+		
+		
+		/* plot data */
+		
+		// Project the coordinates into the canvas
+		var projectCoordinates = function(zoom_bounds_x, zoom_bounds_y, x, y){
+			var x_proj = side_offset + hor_res_with_offset*(x-zoom_bounds_x[0])/(zoom_bounds_x[1]-zoom_bounds_x[0]);
+			var y_proj = top_offset + vert_res_with_offset-vert_res_with_offset*(y-zoom_bounds_y[0])/(zoom_bounds_y[1]-zoom_bounds_y[0]);
+			
+			return [x_proj, y_proj];
+		};
+		
+		ctx.setLineDash([]);
+
+		// determine legend preliminaries
+		var N_primary = plot_data.size_primary, N_secondary = plot_data.size_secondary;
+		if (plot_data.xvar != time){
+			if (plot_data.data[plot_data.xvar].is_primary)
+				N_primary--;
+			else
+				N_secondary--;
+		}
+		var legend_spacing = hor_res/Math.max(N_primary, N_secondary+1);
+		
+		
+		var counter = 0;
+		for (data_name in plot_data.data){
+			// skip the primary variables
+			if (data_name == plot_data.xvar || data_name == time)
+				continue;
+		
+			// color
+			ctx.beginPath();
+			ctx.strokeStyle = colors[counter++];
+		
+			// draw actual plot lines
+			for (var i=0; i<plot_data.data[data_name].data.length-1; i++){
+				var coords_start = projectCoordinates(plot_data.hor_zoom, 
+					plot_data.data[data_name].is_primary?plot_data.pri_vert_zoom:plot_data.sec_vert_zoom, 
+					plot_data.data[plot_data.xvar].data[i], plot_data.data[data_name].data[i]);
+				var coords_end = projectCoordinates(plot_data.hor_zoom, 
+					plot_data.data[data_name].is_primary?plot_data.pri_vert_zoom:plot_data.sec_vert_zoom, 
+					plot_data.data[plot_data.xvar].data[i+1], plot_data.data[data_name].data[i+1]);
+			
+				ctx.moveTo(coords_start[0], coords_start[1]);
+				ctx.lineTo(coords_end[0], coords_end[1]);
+			}
+			ctx.stroke();
+		}
+		
+		// clear away extraneous lines
+		ctx.clearRect(0, 0, side_offset, vert_res);
+		ctx.clearRect(0, 0, hor_res, top_offset);
+		ctx.clearRect(hor_res-side_offset, 0, side_offset, vert_res);
+		ctx.clearRect(0, vert_res-bottom_offset, hor_res, bottom_offset);
 
 		
 		/* draw grids in main plot area */
 
 		// draw bounding box
 		ctx.beginPath();
+		ctx.strokeStyle = '#999999';
 		ctx.rect(side_offset, top_offset, hor_res_with_offset, vert_res_with_offset);
 		ctx.lineWidth=1;
 		ctx.setLineDash([]);
@@ -150,45 +206,21 @@ var Plotter = (function(){
 		ctx.fillText(plot_data.title, hor_res/2, 0);
 		
 		
-		/* plot data */
+		/* draw legends */
 		
 		ctx.setLineDash([]);
-		
-		// determine primary horizontal visible area
-		var project_coords = function(zoom_bounds_x, zoom_bounds_y, x, y){
-			if (x<=zoom_bounds_x[1] && x>=zoom_bounds_x[0] && y<=zoom_bounds_y[1] && y>=zoom_bounds_y[0]){
-				var x_proj = side_offset + hor_res_with_offset*(x-zoom_bounds_x[0])/(zoom_bounds_x[1]-zoom_bounds_x[0]);
-				var y_proj = top_offset + vert_res_with_offset-vert_res_with_offset*(y-zoom_bounds_y[0])/(zoom_bounds_y[1]-zoom_bounds_y[0]);
-				
-				return [x_proj, y_proj];
-			}
-			
-			return false;
-		};
-		
-		// determine legend preliminaries
-		var N_primary = plot_data.size_primary, N_secondary = plot_data.size_secondary;
-		if (plot_data.xvar != time){
-			if (plot_data.data[plot_data.xvar].is_primary)
-				N_primary--;
-			else
-				N_secondary--;
-		}
-		var legend_spacing = hor_res/Math.max(N_primary, N_secondary+1);
-		
 		var counter_pri = 0, counter_sec = 0;
 		for (data_name in plot_data.data){
 			// skip the primary variables
 			if (data_name == plot_data.xvar || data_name == time)
 				continue;
-		
+				
 			// color
 			ctx.beginPath();
 			ctx.strokeStyle = colors[counter_pri+counter_sec];
 		
 			// draw legend
 			var legend_x, legend_y;
-			
 			if (plot_data.data[data_name].is_primary){
 				legend_x = legend_spacing*(++counter_pri);
 				legend_y = title_font + label_font;
@@ -205,27 +237,12 @@ var Plotter = (function(){
 				ctx.textAlign = "right";
 				ctx.moveTo(legend_x + 5, legend_y+label_font/2);
 				ctx.lineTo(legend_x + 20, legend_y+label_font/2);
-				
 			}
 			ctx.textBaseline = "top";
 			ctx.font = label_font+"px Arial";
 			ctx.fillText(data_name + " ("+plot_data.data[data_name].unit+")", legend_x, legend_y);
-		
-			// draw actual plot lines
-			for (var i=0; i<plot_data.data[data_name].data.length-1; i++){
-				var coords_start = project_coords(plot_data.hor_zoom, 
-					plot_data.data[data_name].is_primary?plot_data.pri_vert_zoom:plot_data.sec_vert_zoom, 
-					plot_data.data[plot_data.xvar].data[i], plot_data.data[data_name].data[i]);
-				var coords_end = project_coords(plot_data.hor_zoom, 
-					plot_data.data[data_name].is_primary?plot_data.pri_vert_zoom:plot_data.sec_vert_zoom, 
-					plot_data.data[plot_data.xvar].data[i+1], plot_data.data[data_name].data[i+1]);
-			
-				ctx.moveTo(coords_start[0], coords_start[1]);
-				ctx.lineTo(coords_end[0], coords_end[1]);
-			}
 			ctx.stroke();
 		}
-		
 	};
 	
 	
@@ -246,7 +263,30 @@ var Plotter = (function(){
 			for (var i=0; i<containers.length; i++){
 				plot(containers[i], this.data_array[i]);
 			}
-		}
+		},
+		
+		zoom_horizontal: function(zoom_bounds_x, no_redraw){
+			// set x_bounds
+			this.data_array.forEach(function(el){
+				el.setHorizontalZoom(zoom_bounds_x[0], zoom_bounds_x[1]);
+			});
+		
+			if (no_redraw === undefined)
+				no_redraw = false;
+			if (!no_redraw)
+				this.redraw();
+		},
+		
+		zoom_vertical: function(canvas_index, zoom_bounds_y_pri, zoom_bounds_y_sec, no_redraw){
+			// set y bounds
+			this.data_array[canvas_index].setPriVerticalZoom(zoom_bounds_y_pri[0], zoom_bounds_y_pri[1]);
+			this.data_array[canvas_index].setSecVerticalZoom(zoom_bounds_y_sec[0], zoom_bounds_y_sec[1]);
+		
+			if (no_redraw === undefined)
+				no_redraw = false;
+			if (!no_redraw)
+				this.redraw();
+		},
 	};
 
 })();
@@ -266,13 +306,16 @@ $(document).ready(function(){
 	Plotter.data_array.push(p_data);
 	// test data for now
 	p_data.addData('time', [0, 10, 20, 30], 's', true);
-	p_data.addData('ail', [30, 15, 50, 30], 'deg', true);
-	p_data.addData('elv', [42.22, 80, -20, 30], 'deg', true);
-	p_data.addData('stab', [0, -5, -7, -50], 'deg', false);
+	p_data.addData('ail', [0, 15, 50, 30], 'deg', true);
+	p_data.addData('elv', [0, 80, -20, 30], 'deg', true);
+	p_data.addData('stab', [0, -5, -7, -5], 'deg', false);
 	
 	
 	
 	Plotter.redraw();
+	
+	Plotter.zoom_horizontal([12.5, 25]);
+	Plotter.zoom_vertical(0, [0, 5], [-7, -2.5]);
 	
 	$(window).resize(function(){
 		Plotter.redraw();
