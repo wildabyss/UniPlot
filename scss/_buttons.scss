@@ -1,3 +1,26 @@
+ul.button_group{
+	list-style-type: none;
+	margin: 0;
+	padding: 0 0 0 5px;
+	
+	li{
+		display: inline-block;
+		margin: 0 0 0 5px;
+	}
+}
+ul.button_group.modal_button_group{
+	line-height: 49px;
+	display: flex;
+	flex-direction: row;
+	text-align: center;
+	
+	li{
+		flex: 1;
+		display: block;
+		margin: 0;
+	}
+}
+
 button{
 	cursor: pointer;
 	border-radius: 4px;
@@ -11,22 +34,42 @@ button{
 	border: 1px solid transparent;
 }
 
-button.blue{
+.blue{
 	background-color: #337ab7;
 	color: #fff;
 	border-color: #2e6da4;
 }
-button.blue:hover{
+.blue:hover{
 	background-color: #286090;
 	border-color: #204d74;
 }
 
-button.teal{
+.teal{
 	background-color: #5bc0de;
 	color: #fff;
 	border-color: #46b8da;
 }
-button.teal:hover{
+.teal:hover{
 	background-color: #31b0d5;
 	border-color: #269abc;
+}
+
+.black{
+	background-color: #222222;
+	color: #fff;
+	border-color: #080808;
+}
+.black:hover{
+	background-color: #363636;
+	border-color: #000;
+}
+
+.green{
+	background-color: #5cb85c;
+	color: #fff;
+	border-color: #4cae4c;
+}
+.green:hover{
+	background-color: #47a447;
+	border-color: #398439;
 }

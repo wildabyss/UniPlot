@@ -38,4 +38,64 @@ $(document).ready(function(){
 	$('html').click(function() {
 		hideMobileMenu();
 	});
+	
+	// data button
+	$('.btn_data').click(function(){
+		$('#data_modal').dialog({
+			dialogClass: "no-close",
+			closeOnEscape: true,
+			resizable: false,
+			draggable: false,
+			title: 'Plotting',
+			modal: true,
+			buttons: [
+			{
+				text: "Close",
+				click: function() {
+					$(this).dialog( "close" );
+				}
+			}
+			],
+		});
+	});
+	
+	// load button
+	$('.btn_load').click(function(){
+		$('#load_modal').dialog({
+			dialogClass: "no-close",
+			closeOnEscape: true,
+			resizable: false,
+			draggable: false,
+			title: 'Load',
+			modal: true,
+			buttons: [
+			{
+				text: "Close",
+				click: function() {
+					$(this).dialog( "close" );
+				}
+			}
+			],
+		});
+	});
+	
+	// save button
+	$('.btn_save').click(function(){
+		$('#save_modal').dialog({
+			dialogClass: "no-close",
+			closeOnEscape: true,
+			resizable: false,
+			draggable: false,
+			title: 'Save',
+			modal: true,
+			buttons: [
+			{
+				text: "Close",
+				click: function() {
+					$(this).dialog( "close" );
+				}
+			}
+			],
+		});
+	});
 });
