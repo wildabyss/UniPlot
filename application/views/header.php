@@ -66,4 +66,14 @@
 				</ul>
 			</aside>
 			
+			<aside class="modal_container" id="data_management_modal">
+				<button>Add Data File</button>
+				<fieldset>
+					<label for="checkbox-1">2 Star</label>
+					<input type="checkbox" name="checkbox-1" id="checkbox-1">
+					<label for="checkbox-1">2 Star</label>
+					<input type="checkbox" name="checkbox-1" id="checkbox-1">
+				</fieldset>
+			</aside>
+			
 			<main>
