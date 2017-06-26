@@ -28,10 +28,21 @@ var Plotter = (function(){
 		'#800080', 			// purple
 		'#00FF00', 			// lime
 		'#FF00FF',			// fuchsia
-	];	
+	];
 
 	var time = 'time';
 	
+	var setLineStyle = function(ctx, file_counter, param_counter){
+		if (file_counter == 0)
+			ctx.setLineDash([]);
+		else
+			ctx.setLineDash([2/file_counter, 3/file_counter]);
+		ctx.strokeStyle = colors[param_counter];
+	}
+	
+	/**
+	 * Refit the canvas size as browser resizes
+	 */
 	var refit = function(){
 		var hor_res = $("canvas.plot_main").width();
 		var vert_res = Math.max(canvas_min_height, hor_res*canvas_height_ratio);
@@ -45,14 +56,17 @@ var Plotter = (function(){
 	};
 
 	
-	var plot = function(canvas_container, plot_parameters){
+	/**
+	 * Plot the single canvas with plot_parameters from data_sources
+	 */
+	var plot = function(data_sources, canvas_container, plot_parameters){
 		// parse plot_parameters
 		if (!plot_parameters instanceof PlotParameters)
 			throw "second parameter must be an instance of plot_graph_data class";
 		var minX = plot_parameters.hor_zoom[0], maxX = plot_parameters.hor_zoom[1];
 		var minY_pri = plot_parameters.pri_vert_zoom[0], maxY_pri = plot_parameters.pri_vert_zoom[1];
 		var minY_sec = plot_parameters.sec_vert_zoom[0], maxY_sec = plot_parameters.sec_vert_zoom[1];
-		var xlabel = plot_parameters.xvar + (plot_parameters.data[plot_parameters.xvar].unit=="" ? "" : " (" + plot_parameters.data[plot_parameters.xvar].unit + ")");
+		var xlabel = plot_parameters.xvar + (plot_parameters.parameters[plot_parameters.xvar].unit=="" ? "" : " (" + plot_parameters.parameters[plot_parameters.xvar].unit + ")");
 		var title = plot_parameters.title;
 	
 		// total canvas dimensions
@@ -82,42 +96,53 @@ var Plotter = (function(){
 			return [x_proj, y_proj];
 		};
 		
-		ctx.setLineDash([]);
-
-		// determine legend preliminaries
-		var N_primary = plot_parameters.size_primary, N_secondary = plot_parameters.size_secondary;
-		if (plot_parameters.xvar != time){
-			if (plot_parameters.data[plot_parameters.xvar].is_primary)
-				N_primary--;
-			else
-				N_secondary--;
-		}
-		var legend_spacing = hor_res/Math.max(N_primary, N_secondary+1);
-		
-		
-		var counter = 0;
-		for (data_name in plot_parameters.data){
+		var num_active_sources = 0;
+		var N_primary = 0, N_secondary = 0;
+		var active_once = false;
+		for (parameter_name in plot_parameters.parameters){
 			// skip the primary variables
-			if (data_name == plot_parameters.xvar || data_name == time)
+			if (parameter_name == plot_parameters.xvar || parameter_name == time)
 				continue;
-		
-			// color
-			ctx.beginPath();
-			ctx.strokeStyle = colors[counter++];
-		
-			// draw actual plot lines
-			for (var i=0; i<plot_parameters.data[data_name].data.length-1; i++){
-				var coords_start = projectCoordinates(plot_parameters.hor_zoom, 
-					plot_parameters.data[data_name].is_primary?plot_parameters.pri_vert_zoom:plot_parameters.sec_vert_zoom, 
-					plot_parameters.data[plot_parameters.xvar].data[i], plot_parameters.data[data_name].data[i]);
-				var coords_end = projectCoordinates(plot_parameters.hor_zoom, 
-					plot_parameters.data[data_name].is_primary?plot_parameters.pri_vert_zoom:plot_parameters.sec_vert_zoom, 
-					plot_parameters.data[plot_parameters.xvar].data[i+1], plot_parameters.data[data_name].data[i+1]);
+				
+			// get the Parameter object
+			var parameter = plot_parameters.parameters[parameter_name];
+
+			var file_counter = 0;
+			for (source_name in data_sources){
+				var data_source = data_sources[source_name];
+				if (!data_source.active)
+					continue;
 			
-				ctx.moveTo(coords_start[0], coords_start[1]);
-				ctx.lineTo(coords_end[0], coords_end[1]);
+				// color
+				ctx.beginPath();
+				setLineStyle(ctx, file_counter, N_primary+N_secondary);
+			
+				// draw actual plot lines
+				for (var i=0; i<data_source.data[parameter_name].length-1; i++){
+					var coords_start = projectCoordinates(plot_parameters.hor_zoom, 
+						parameter.is_primary?plot_parameters.pri_vert_zoom:plot_parameters.sec_vert_zoom, 
+						data_source.data[plot_parameters.xvar][i], data_source.data[parameter_name][i]);
+					var coords_end = projectCoordinates(plot_parameters.hor_zoom, 
+						parameter.is_primary?plot_parameters.pri_vert_zoom:plot_parameters.sec_vert_zoom, 
+						data_source.data[plot_parameters.xvar][i+1], data_source.data[parameter_name][i+1]);
+				
+					ctx.moveTo(coords_start[0], coords_start[1]);
+					ctx.lineTo(coords_end[0], coords_end[1]);
+				}
+				ctx.stroke();
+				
+				if (!active_once)
+					num_active_sources++;
+				file_counter++;
 			}
-			ctx.stroke();
+			
+			// counters for primary and secondary axes
+			if (parameter.is_primary)
+				N_primary++;
+			else
+				N_secondary++;
+				
+			active_once = true;
 		}
 		
 		// clear away extraneous lines
@@ -208,40 +233,57 @@ var Plotter = (function(){
 		
 		/* draw legends */
 		
+		// determine legend preliminaries
+		var legend_spacing = hor_res/Math.max(N_primary*num_active_sources+1, N_secondary*num_active_sources+1);
+		
 		ctx.setLineDash([]);
-		var counter_pri = 0, counter_sec = 0;
-		for (data_name in plot_parameters.data){
+		N_primary = 0; N_secondary = 0;
+		for (parameter_name in plot_parameters.parameters){
 			// skip the primary variables
-			if (data_name == plot_parameters.xvar || data_name == time)
+			if (parameter_name == plot_parameters.xvar || parameter_name == time)
 				continue;
 				
-			// color
-			ctx.beginPath();
-			ctx.strokeStyle = colors[counter_pri+counter_sec];
-		
-			// draw legend
-			var legend_x, legend_y;
-			if (plot_parameters.data[data_name].is_primary){
-				legend_x = legend_spacing*(++counter_pri);
-				legend_y = title_font + label_font;
-			} else {
-				legend_x = legend_spacing*(++counter_sec);
-				legend_y = title_font + label_font*2;
+			var file_counter = 0;
+			for (source_name in data_sources){
+				var data_source = data_sources[source_name];
+				if (!data_source.active)
+					continue;
+					
+				// color
+				ctx.beginPath();
+				setLineStyle(ctx, file_counter, N_primary+N_secondary);
+			
+				// draw legend
+				var legend_x, legend_y;
+				if (plot_parameters.parameters[parameter_name].is_primary){
+					legend_x = legend_spacing*(num_active_sources*N_primary + file_counter+1);
+					legend_y = title_font + label_font;
+				} else {
+					legend_x = legend_spacing*(num_active_sources*N_secondary + file_counter+1);
+					legend_y = title_font + label_font*2;
+				}
+				
+				if (plot_parameters.parameters[parameter_name].is_primary){
+					ctx.textAlign = "left";
+					ctx.moveTo(legend_x - 5, legend_y+label_font/2);
+					ctx.lineTo(legend_x - 20, legend_y+label_font/2);
+				} else {
+					ctx.textAlign = "right";
+					ctx.moveTo(legend_x + 5, legend_y+label_font/2);
+					ctx.lineTo(legend_x + 20, legend_y+label_font/2);
+				}
+				ctx.textBaseline = "top";
+				ctx.font = label_font+"px Arial";
+				ctx.fillText(parameter_name + " ("+plot_parameters.parameters[parameter_name].unit+")" + " ["+source_name+"]", legend_x, legend_y);
+				ctx.stroke();
+				
+				file_counter++;
 			}
 			
-			if (plot_parameters.data[data_name].is_primary){
-				ctx.textAlign = "left";
-				ctx.moveTo(legend_x - 5, legend_y+label_font/2);
-				ctx.lineTo(legend_x - 20, legend_y+label_font/2);
-			} else {
-				ctx.textAlign = "right";
-				ctx.moveTo(legend_x + 5, legend_y+label_font/2);
-				ctx.lineTo(legend_x + 20, legend_y+label_font/2);
-			}
-			ctx.textBaseline = "top";
-			ctx.font = label_font+"px Arial";
-			ctx.fillText(data_name + " ("+plot_parameters.data[data_name].unit+")", legend_x, legend_y);
-			ctx.stroke();
+			if (plot_parameters.parameters[parameter_name].is_primary)
+				N_primary++;
+			else
+				N_secondary++;
 		}
 	};
 	
@@ -251,7 +293,7 @@ var Plotter = (function(){
 	return {
 		// Array of PlotParameters objects
 		plot_parameters_array: [],
-		data_sources = {},
+		data_sources: {},
 		
 		redraw: function(){
 			refit();
@@ -262,7 +304,7 @@ var Plotter = (function(){
 				throw "data lengths mismatch";
 			
 			for (var i=0; i<containers.length; i++){
-				plot(containers[i], this.plot_parameters_array[i]);
+				plot(this.data_sources, containers[i], this.plot_parameters_array[i]);
 			}
 		},
 		
@@ -295,25 +337,6 @@ var Plotter = (function(){
 
 
 $(document).ready(function(){
-	/*var p_data = new PlotData('Surface Plot 1');
-	Plotter.plot_parameters_array.push(p_data);
-	// test data for now
-	p_data.addData('time', [0, 10, 20, 30], 's', true);
-	p_data.addData('ail', [0, 15, 50, 30], 'deg', true);
-	p_data.addData('elv', [0, 80, -20, 30], 'deg', true);
-	p_data.addData('stab', [0, -5, -7, -5], 'deg', false);
-	
-	p_data = new PlotData('Surface Plot 2');
-	Plotter.plot_parameters_array.push(p_data);
-	// test data for now
-	p_data.addData('time', [0, 10, 20, 30], 's', true);
-	p_data.addData('ail', [0, 15, 50, 30], 'deg', true);
-	p_data.addData('elv', [0, 80, -20, 30], 'deg', true);
-	p_data.addData('stab', [0, -5, -7, -5], 'deg', false);
-	*/
-	
-
-	
 	$(window).resize(function(){
 		Plotter.redraw();
 	});

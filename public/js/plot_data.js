@@ -1,12 +1,15 @@
 /**
  * DataSource class
  */
-function DataSource(){
+function DataSource(active){
+	if (typeof active != "boolean")
+		throw "parameter must be a boolean";
+
 	this.data = {
 		time: [0, 10],
 	};
 	
-	this.active = true;
+	this.active = active;
 }
 
 
@@ -48,7 +51,7 @@ PlotParameters.prototype.Parameter = function(unit, is_primary){
 /**
  * Append Parameter to the data array
  */
-PlotParameters.prototype.addParameter = function(parameter_name, unit, is_primary){
+PlotParameters.prototype.addParameter = function(data_sources, parameter_name, unit, is_primary){
 	// add data
 	if (!this.parameters.hasOwnProperty(parameter_name)){
 		if (is_primary)
@@ -56,10 +59,10 @@ PlotParameters.prototype.addParameter = function(parameter_name, unit, is_primar
 		else
 			this.size_secondary++;
 	}
-	this.parameters[parameter_name] = new this.Parameter(data_array, unit, is_primary); 
+	this.parameters[parameter_name] = new this.Parameter(unit, is_primary); 
 	
 	// rezoom
-	this.setZoomOnData(parameter_name);
+	this.setZoomOnParameter(data_sources, parameter_name);
 };
 
 
@@ -140,6 +143,6 @@ PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_n
 PlotParameters.prototype.revertZoom = function(data_sources){
 	for (parameter_name in this.parameters){
 		if (parameter_name != this.xvar)
-			this.setZoomOnParameter(parameter_name);
+			this.setZoomOnParameter(data_sources, parameter_name);
 	}
 }

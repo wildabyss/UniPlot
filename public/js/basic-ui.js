@@ -34,10 +34,34 @@ var modal_preconstruction = function(){
 	
 	$('#btn_plots_management').click(function(){
 		// TEST ONLY
-		Plotter.plot_parameters_array.push(new PlotParameters(''));
+		Plotter.data_sources.file1 = new DataSource(true);
+		Plotter.data_sources.file1.data = {
+			time: [0, 1, 2, 3, 4],
+			ail: [3, 4, -5, -5, 2],
+			elv: [-2, -2.5, -2, -2.1, -1.5],
+			stab: [-3, -3.2, -3.2, 2, -3.2],
+			mfs: [0.1, 0.1, 0,2, 0, 0.44],
+		};
+		Plotter.data_sources.file2 = new DataSource(true);
+		Plotter.data_sources.file2.data = {
+			time: [0, 1, 2, 3, 4],
+			ail: [2, 1, -4.2, -4.9, 1.5],
+			elv: [-2.2, -2.7, -2.2, -2.8, -0.4],
+			stab: [-3, -3.2, -3.2, 2, -3.2],
+			mfs: [0.1, 0.1, 0,2, 0, 0.44],
+		};
+		
+		pp1 = new PlotParameters('Surface Plot 1');
+		Plotter.plot_parameters_array.push(pp1);
+		pp1.addParameter(Plotter.data_sources, 'time', 's', true);
+		pp1.addParameter(Plotter.data_sources, 'ail', 'deg', true);
+		pp1.addParameter(Plotter.data_sources, 'elv', 'deg', false);
+
 		$('main').append('<div class="plot_container">\
 			<canvas class="plot_main" width="5" height="5"></canvas>\
 		</div>');
+		
+		
 		Plotter.redraw();
 	});
 	
