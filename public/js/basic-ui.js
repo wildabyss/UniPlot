@@ -27,19 +27,42 @@ var restoreScroll = function(){
 };
 
 
+// To be evaluated in document.ready function
 var modal_preconstruction = function(){
+	// make checkboxes
+	$("input[type='checkbox']").checkboxradio();
+	
 	$('#btn_plots_management').click(function(){
 		// TEST ONLY
-		Plotter.data_array.push(new PlotData(''));
+		Plotter.plot_parameters_array.push(new PlotParameters(''));
 		$('main').append('<div class="plot_container">\
 			<canvas class="plot_main" width="5" height="5"></canvas>\
 		</div>');
 		Plotter.redraw();
-		
-		
 	});
 	
-	$("input[type='radio']").checkboxradio();
+	$('#btn_data_management').click(function(){
+		$('#data_modal').dialog('close');
+		
+		$('#data_management_modal').dialog({
+			dialogClass: "no-close",
+			position: {my: "center", at: "center", of: window},
+			closeOnEscape: true,
+			resizable: false,
+			draggable: false,
+			title: 'Data Sources',
+			modal: true,
+			width: 'auto',
+			buttons: [
+			{
+				text: "Close",
+				click: function() {
+					$(this).dialog( "close" );
+				}
+			}
+			],
+		});
+	});
 }
 
 

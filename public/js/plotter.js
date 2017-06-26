@@ -45,15 +45,15 @@ var Plotter = (function(){
 	};
 
 	
-	var plot = function(canvas_container, plot_data){
-		// parse plot_data
-		if (!plot_data instanceof PlotData)
+	var plot = function(canvas_container, plot_parameters){
+		// parse plot_parameters
+		if (!plot_parameters instanceof PlotParameters)
 			throw "second parameter must be an instance of plot_graph_data class";
-		var minX = plot_data.hor_zoom[0], maxX = plot_data.hor_zoom[1];
-		var minY_pri = plot_data.pri_vert_zoom[0], maxY_pri = plot_data.pri_vert_zoom[1];
-		var minY_sec = plot_data.sec_vert_zoom[0], maxY_sec = plot_data.sec_vert_zoom[1];
-		var xlabel = plot_data.xvar + (plot_data.data[plot_data.xvar].unit=="" ? "" : " (" + plot_data.data[plot_data.xvar].unit + ")");
-		var title = plot_data.title;
+		var minX = plot_parameters.hor_zoom[0], maxX = plot_parameters.hor_zoom[1];
+		var minY_pri = plot_parameters.pri_vert_zoom[0], maxY_pri = plot_parameters.pri_vert_zoom[1];
+		var minY_sec = plot_parameters.sec_vert_zoom[0], maxY_sec = plot_parameters.sec_vert_zoom[1];
+		var xlabel = plot_parameters.xvar + (plot_parameters.data[plot_parameters.xvar].unit=="" ? "" : " (" + plot_parameters.data[plot_parameters.xvar].unit + ")");
+		var title = plot_parameters.title;
 	
 		// total canvas dimensions
 		var main_canvas = $(canvas_container).find("canvas.plot_main")[0];
@@ -85,9 +85,9 @@ var Plotter = (function(){
 		ctx.setLineDash([]);
 
 		// determine legend preliminaries
-		var N_primary = plot_data.size_primary, N_secondary = plot_data.size_secondary;
-		if (plot_data.xvar != time){
-			if (plot_data.data[plot_data.xvar].is_primary)
+		var N_primary = plot_parameters.size_primary, N_secondary = plot_parameters.size_secondary;
+		if (plot_parameters.xvar != time){
+			if (plot_parameters.data[plot_parameters.xvar].is_primary)
 				N_primary--;
 			else
 				N_secondary--;
@@ -96,9 +96,9 @@ var Plotter = (function(){
 		
 		
 		var counter = 0;
-		for (data_name in plot_data.data){
+		for (data_name in plot_parameters.data){
 			// skip the primary variables
-			if (data_name == plot_data.xvar || data_name == time)
+			if (data_name == plot_parameters.xvar || data_name == time)
 				continue;
 		
 			// color
@@ -106,13 +106,13 @@ var Plotter = (function(){
 			ctx.strokeStyle = colors[counter++];
 		
 			// draw actual plot lines
-			for (var i=0; i<plot_data.data[data_name].data.length-1; i++){
-				var coords_start = projectCoordinates(plot_data.hor_zoom, 
-					plot_data.data[data_name].is_primary?plot_data.pri_vert_zoom:plot_data.sec_vert_zoom, 
-					plot_data.data[plot_data.xvar].data[i], plot_data.data[data_name].data[i]);
-				var coords_end = projectCoordinates(plot_data.hor_zoom, 
-					plot_data.data[data_name].is_primary?plot_data.pri_vert_zoom:plot_data.sec_vert_zoom, 
-					plot_data.data[plot_data.xvar].data[i+1], plot_data.data[data_name].data[i+1]);
+			for (var i=0; i<plot_parameters.data[data_name].data.length-1; i++){
+				var coords_start = projectCoordinates(plot_parameters.hor_zoom, 
+					plot_parameters.data[data_name].is_primary?plot_parameters.pri_vert_zoom:plot_parameters.sec_vert_zoom, 
+					plot_parameters.data[plot_parameters.xvar].data[i], plot_parameters.data[data_name].data[i]);
+				var coords_end = projectCoordinates(plot_parameters.hor_zoom, 
+					plot_parameters.data[data_name].is_primary?plot_parameters.pri_vert_zoom:plot_parameters.sec_vert_zoom, 
+					plot_parameters.data[plot_parameters.xvar].data[i+1], plot_parameters.data[data_name].data[i+1]);
 			
 				ctx.moveTo(coords_start[0], coords_start[1]);
 				ctx.lineTo(coords_end[0], coords_end[1]);
@@ -185,7 +185,7 @@ var Plotter = (function(){
 		}
 		
 		// draw y-ticks (secondary axis)
-		if (plot_data.size_secondary > 0){
+		if (plot_parameters.size_secondary > 0){
 			for (var i=0; i<=vert_n; i++){
 				var loc = top_offset + vert_res_with_offset - i*vert_step;
 				var tick = i*(maxY_sec-minY_sec)/vert_n + minY_sec;
@@ -203,16 +203,16 @@ var Plotter = (function(){
 		ctx.textBaseline = "top";
 		ctx.textAlign = "center";
 		ctx.font = "bold " + title_font+"px Arial";
-		ctx.fillText(plot_data.title, hor_res/2, 0);
+		ctx.fillText(plot_parameters.title, hor_res/2, 0);
 		
 		
 		/* draw legends */
 		
 		ctx.setLineDash([]);
 		var counter_pri = 0, counter_sec = 0;
-		for (data_name in plot_data.data){
+		for (data_name in plot_parameters.data){
 			// skip the primary variables
-			if (data_name == plot_data.xvar || data_name == time)
+			if (data_name == plot_parameters.xvar || data_name == time)
 				continue;
 				
 			// color
@@ -221,7 +221,7 @@ var Plotter = (function(){
 		
 			// draw legend
 			var legend_x, legend_y;
-			if (plot_data.data[data_name].is_primary){
+			if (plot_parameters.data[data_name].is_primary){
 				legend_x = legend_spacing*(++counter_pri);
 				legend_y = title_font + label_font;
 			} else {
@@ -229,7 +229,7 @@ var Plotter = (function(){
 				legend_y = title_font + label_font*2;
 			}
 			
-			if (plot_data.data[data_name].is_primary){
+			if (plot_parameters.data[data_name].is_primary){
 				ctx.textAlign = "left";
 				ctx.moveTo(legend_x - 5, legend_y+label_font/2);
 				ctx.lineTo(legend_x - 20, legend_y+label_font/2);
@@ -240,7 +240,7 @@ var Plotter = (function(){
 			}
 			ctx.textBaseline = "top";
 			ctx.font = label_font+"px Arial";
-			ctx.fillText(data_name + " ("+plot_data.data[data_name].unit+")", legend_x, legend_y);
+			ctx.fillText(data_name + " ("+plot_parameters.data[data_name].unit+")", legend_x, legend_y);
 			ctx.stroke();
 		}
 	};
@@ -248,26 +248,27 @@ var Plotter = (function(){
 	
 	/* PUBLIC MEMBERS */
 	
-	// data array containing PlotData
 	return {
-		data_array: [],
+		// Array of PlotParameters objects
+		plot_parameters_array: [],
+		data_sources = {},
 		
 		redraw: function(){
 			refit();
 			
 			var containers = $(".plot_container");
 			// sanity check
-			if (this.data_array.length != containers.length)
+			if (this.plot_parameters_array.length != containers.length)
 				throw "data lengths mismatch";
 			
 			for (var i=0; i<containers.length; i++){
-				plot(containers[i], this.data_array[i]);
+				plot(containers[i], this.plot_parameters_array[i]);
 			}
 		},
 		
 		zoom_horizontal: function(zoom_bounds_x, no_redraw){
 			// set x_bounds
-			this.data_array.forEach(function(el){
+			this.plot_parameters_array.forEach(function(el){
 				el.setHorizontalZoom(zoom_bounds_x[0], zoom_bounds_x[1]);
 			});
 		
@@ -279,8 +280,8 @@ var Plotter = (function(){
 		
 		zoom_vertical: function(canvas_index, zoom_bounds_y_pri, zoom_bounds_y_sec, no_redraw){
 			// set y bounds
-			this.data_array[canvas_index].setPriVerticalZoom(zoom_bounds_y_pri[0], zoom_bounds_y_pri[1]);
-			this.data_array[canvas_index].setSecVerticalZoom(zoom_bounds_y_sec[0], zoom_bounds_y_sec[1]);
+			this.plot_parameters_array[canvas_index].setPriVerticalZoom(zoom_bounds_y_pri[0], zoom_bounds_y_pri[1]);
+			this.plot_parameters_array[canvas_index].setSecVerticalZoom(zoom_bounds_y_sec[0], zoom_bounds_y_sec[1]);
 		
 			if (no_redraw === undefined)
 				no_redraw = false;
@@ -295,7 +296,7 @@ var Plotter = (function(){
 
 $(document).ready(function(){
 	/*var p_data = new PlotData('Surface Plot 1');
-	Plotter.data_array.push(p_data);
+	Plotter.plot_parameters_array.push(p_data);
 	// test data for now
 	p_data.addData('time', [0, 10, 20, 30], 's', true);
 	p_data.addData('ail', [0, 15, 50, 30], 'deg', true);
@@ -303,7 +304,7 @@ $(document).ready(function(){
 	p_data.addData('stab', [0, -5, -7, -5], 'deg', false);
 	
 	p_data = new PlotData('Surface Plot 2');
-	Plotter.data_array.push(p_data);
+	Plotter.plot_parameters_array.push(p_data);
 	// test data for now
 	p_data.addData('time', [0, 10, 20, 30], 's', true);
 	p_data.addData('ail', [0, 15, 50, 30], 'deg', true);

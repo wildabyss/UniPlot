@@ -28,18 +28,18 @@
 				<a class="logo">UniPlot</a>
 				
 				<ul id="desktop_menu" class="button_group">
-					<li><button class="green" id="btn_add_data">Data</button></li>
-					<li><button class="blue" id="btn_add_data">Load</button></li>
-					<li><button class="blue" id="btn_save">Save</button></li>
-					<li><button class="teal" id="btn_annotate">Annotate</button></li>
-					<li><button class="teal" id="btn_zoom">Zoom</button></li>
+					<li><button class="green btn_data">Data</button></li>
+					<li><button class="blue btn_load">Load</button></li>
+					<li><button class="blue btn_save">Save</button></li>
+					<li><button class="teal btn_annotate">Annotate</button></li>
+					<li><button class="teal btn_zoom">Zoom</button></li>
 				</ul>
 				
 				<ul id="mobile_menu">
-					<li><a>Data</a></li>
-					<li><a>Load</a></li>
-					<li><a>Save</a></li>
-					<li><a>Annotate</a></li>
+					<li><a class="green btn_data">Data</a></li>
+					<li><a class="blue btn_load">Load</a></li>
+					<li><a class="blue btn_save">Save</a></li>
+					<li><a class="teal btn_annotate">Annotate</a></li>
 				</ul>
 				
 			</header>
@@ -67,12 +67,18 @@
 			</aside>
 			
 			<aside class="modal_container" id="data_management_modal">
-				<button>Add Data File</button>
+				<button class="green" id="btn_add_data">Add Data File</button>
 				<fieldset>
-					<label for="checkbox-1">2 Star</label>
-					<input type="checkbox" name="checkbox-1" id="checkbox-1">
-					<label for="checkbox-1">2 Star</label>
-					<input type="checkbox" name="checkbox-1" id="checkbox-1">
+					<div class="data_file_row">
+						<label for="checkbox-1">2 Star</label>
+						<input type="checkbox" name="checkbox-1" id="checkbox-1">
+						<button class="orange delete">DEL</button>
+					</div>
+					<div class="data_file_row">
+						<label for="checkbox-2">2 Star</label>
+						<input type="checkbox" name="checkbox-2" id="checkbox-2">
+						<button class="orange delete">DEL</button>
+					</div>
 				</fieldset>
 			</aside>
 			

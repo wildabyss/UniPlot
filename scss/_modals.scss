@@ -1,7 +1,36 @@
-.modal_container{
+aside.modal_container{
 	display: none;
 }
 
 .no-close .ui-dialog-titlebar-close {
 	display: none;
+}
+
+aside#data_management_modal{
+	
+	button#btn_add_data{
+		width: 100%;
+		margin-bottom: 5px;
+	}
+	
+	fieldset{
+		width: 70vw;
+		height: 70vh;
+	
+		.data_file_row{
+			display: flex;
+			margin-bottom: 5px;
+		
+			label{
+				flex: 1;
+				text-align: left;
+				line-height: 18px;
+			}
+		
+			button.delete{
+				flex: 0 0 50px;
+			}
+		}
+	}
+
 }
