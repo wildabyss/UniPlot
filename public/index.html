@@ -39,7 +39,7 @@
 					<li class="hide_mobile"><button class="blue btn_save">Save</button></li>
 					<li class="hide_mobile"><button class="teal btn_annotate">Annotate</button></li>
 					<li class="hide_mobile"><button class="teal btn_zoom">Zoom</button></li>
-					<li><button class="teal fa fa-refresh btn_refresh" aria-hidden="true"></button></li>
+					<li><button class="teal btn_refresh"><i class="fa fa-refresh fa-lg" aria-hidden="true"></i></button></li>
 					<li id="refresh_progress"></li>
 				</ul>
 				
@@ -79,6 +79,32 @@
 				<input id="file_add_data" type="file" style="display:none" />
 				<fieldset>
 				</fieldset>
+			</aside>
+			
+			<aside class="modal_container" id="plot_management_modal">
+				<button class="green" id="btn_add_plot">Add Plot</button>
+				
+				<div class="plot_row">
+					<select id="sel_plots"><option>1</option></select>
+					<button class="orange edit"><i class="fa fa-pencil-square-o fa-lg" aria-hidden="true"></i></button>
+					<button class="orange delete" aria-hidden="true"><i class="fa fa-times fa-lg" aria-hidden="true"></i></button>
+				</div>
+				
+				<fieldset>
+					<div class="data_row">
+						<label for="checkbox-"></label>
+						<input type="checkbox" id="checkbox-">
+						
+						<label for="myToggleButton">yo</label>
+						<input type="checkbox" class="blue" id="myToggleButton" />
+						<button class="blue delete" axis="left">Left</button>
+					</div>
+				</fieldset>
+				
+				<div class="x-axis-row">
+					<label for="sel_x_axis">X-Axis Var: </label>
+					<select id="sel_x_axis"><option>1</option></select>
+				</div>
 			</aside>
 			
 			<main>

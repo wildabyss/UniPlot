@@ -1,9 +1,26 @@
-aside.modal_container{
+.no-close .ui-dialog-titlebar-close {
 	display: none;
 }
 
-.no-close .ui-dialog-titlebar-close {
+aside.modal_container{
 	display: none;
+	
+	fieldset{
+		width: 70vw;
+		min-width: 260px;
+		height: 70vh;
+		
+		.data_row{
+			display: flex;
+			margin-bottom: 5px;
+			
+			label{
+				flex: 1;
+				text-align: left;
+				line-height: 18px;
+			}
+		}
+	}
 }
 
 aside#data_management_modal{
@@ -18,25 +35,43 @@ aside#data_management_modal{
 		margin-bottom: 5px;
 		display: none;
 	}
+}
+
+aside#plot_management_modal{
 	
-	fieldset{
-		width: 70vw;
-		height: 70vh;
+	button#btn_add_plot{
+		width: 100%;
+		margin-bottom: 5px;
+	}
 	
-		.data_file_row{
-			display: flex;
-			margin-bottom: 5px;
+	.plot_row{
+		margin-bottom: 5px;
+		display: flex;
 		
-			label{
-				flex: 1;
-				text-align: left;
-				line-height: 18px;
-			}
+		#sel_plots-button{
+			flex: 1;
+		}
 		
-			button.delete{
-				flex: 0 0 50px;
-			}
+		button{
+			margin-left: 2px;
 		}
 	}
-
+	
+	.x-axis-row{
+		margin-top: 5px;
+		display: flex;
+		
+		label{
+			line-height: 25px;
+			margin-right: 5px;
+		}
+		
+		#sel_x_axis-button{
+			flex:1;
+		}
+	}
+	
+	fieldset{
+		height: 62vh;
+	}
 }

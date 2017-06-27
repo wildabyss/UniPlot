@@ -31,7 +31,7 @@ var restoreScroll = function(){
 var modal_preconstruction = function(){
 	$('#btn_plots_management').click(function(){
 		// TEST ONLY
-		pp1 = new PlotParameters('Surface Plot 1');
+		/*pp1 = new PlotParameters('Surface Plot 1');
 		Plotter.plot_parameters_array.push(pp1);
 		pp1.addParameter(Plotter.data_sources, 'time', 's', true);
 		pp1.addParameter(Plotter.data_sources, 'ail', 'deg', true);
@@ -42,7 +42,34 @@ var modal_preconstruction = function(){
 		</div>');
 		
 		
-		Plotter.redraw();
+		Plotter.redraw();*/
+		
+		$('#data_modal').dialog('close');
+		$('#plot_management_modal').dialog({
+			dialogClass: "no-close",
+			position: {my: "center", at: "center", of: window},
+			closeOnEscape: true,
+			resizable: false,
+			draggable: false,
+			title: 'Plot Management',
+			modal: true,
+			width: 'auto',
+			buttons: [
+			{
+				text: "Close",
+				click: function() {
+					$(this).dialog( "close" );
+				}
+			}
+			],
+		});
+		
+		$("#sel_plots").selectmenu();
+		$("#sel_x_axis").selectmenu();
+		
+		$("input[type='checkbox']").checkboxradio()
+		
+		$("#myToggleButton").button();
 	});
 	
 	
@@ -50,7 +77,6 @@ var modal_preconstruction = function(){
 	
 	$('#btn_data_management').click(function(){
 		$('#data_modal').dialog('close');
-		
 		$('#data_management_modal').dialog({
 			dialogClass: "no-close",
 			position: {my: "center", at: "center", of: window},
@@ -100,10 +126,10 @@ var modal_preconstruction = function(){
 				var id = file.name.replaceAll(' ', '-');
 				if ($('input[filename="' + file.name + '"]').length == 0){
 					$('#data_management_modal > fieldset').append('\
-					<div class="data_file_row">\
+					<div class="data_row">\
 						<label for="checkbox-' + id + '">' + id + '</label>\
 						<input type="checkbox" id="checkbox-' + id + '" filename = "' + file.name + '" ">\
-						<button class="orange delete">DEL</button>\
+						<button class="orange delete"><i class="fa fa-times fa-lg" aria-hidden="true"></i></button>\
 					</div>');
 					
 					// make checkbox
