@@ -146,21 +146,29 @@ $(document).ready(function(){
 	
 	// refresh button
 	$('.btn_refresh').click(function(){
-		Plotter.reload(function(progress){
+		var onreading = function(progress){
 			// on reading function
 			
 			$("button.btn_refresh").parent().hide(0);
 			$("#refresh_progress").show(0).progressbar({
 				value: progress
 			});
-		}, function(){
+		};
+		
+		var onfinish = function(files, file_ind){
 			// complete function
 			
 			$("#refresh_progress").hide(0);
 			$("button.btn_refresh").parent().show(0);
 			
-			
-		});
+			// continue reading through files
+			if (++file_ind < files.length)
+				Plotter.read(files, onreading, onfinish, file_ind)
+			else
+				Plotter.redraw();
+		}
+	
+		Plotter.reload(onreading, onfinish);
 	});
 	
 	// data button

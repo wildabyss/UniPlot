@@ -398,14 +398,16 @@ var Plotter = (function(){
 		
 		/**
 		 * Read an external file to parse data
-		 * file: File object
+		 * file: File object or an array of File objects
 		 * fn_reading: function handle to perform while reading file
 		 * fn_complete: function handle to perform after reading finished
+		 * file_ind: optional, required if file == array of File objects
 		 */
-		read: function(file, fn_reading, fn_complete){
+		read: function(files, fn_reading, fn_complete, file_ind){
 			if (!(window.File && window.FileReader && window.FileList && window.Blob))
 				throw "Unsupported browser";
-		
+			
+			var file = (files instanceof Array)?files[file_ind]:files;
 			if (!file.name.endsWith(".csv") && !file.name.endsWith(".ftest") && !file.name.endsWith(".sim")){
 				throw "Unrecognized file type";
 			}
@@ -419,7 +421,11 @@ var Plotter = (function(){
 				if (err) throw err;
 
 				// Custom function handle while reading data
-				fn_reading(progress);
+				if (files instanceof Array){
+					var chunk_prog = 100/files.length;
+					fn_reading(chunk_prog*file_ind + progress/100*chunk_prog);
+				} else
+					fn_reading(progress);
 				
 				// Reading lines
 				for (var i = 0; i < lines.length; i++) {
@@ -427,14 +433,18 @@ var Plotter = (function(){
 					var line = lines[i];
 
 					if (parseDataLine(Plotter.data_sources, file.name, line, line_index) === false){
-						fn_complete();
-						return;
+						isEof = true;
+						break;
 					}
 				}
 
 				// End of file
 				if (isEof) {
-					fn_complete();
+					if (files instanceof Array){
+						fn_complete(files, file_ind);
+					} else {
+						fn_complete();
+					}
 					return;
 				}
 
@@ -444,10 +454,16 @@ var Plotter = (function(){
 		},
 		
 		
+		/**
+		 * Begin the process of reloading all the data sources
+		 */
 		reload: function(fn_reading, fn_complete){
+			var files = [];
 			for (var filename in Plotter.data_sources){
-				this.read(Plotter.data_sources[filename].file, fn_reading, fn_complete);
+				files.push(Plotter.data_sources[filename].file);
 			}
+			
+			this.read(files, fn_reading, fn_complete, 0);
 		}
 	};
 
