@@ -29,33 +29,13 @@ var restoreScroll = function(){
 
 // To be evaluated in document.ready function
 var modal_preconstruction = function(){
-	// make checkboxes
-	$("input[type='checkbox']").checkboxradio();
-	
 	$('#btn_plots_management').click(function(){
 		// TEST ONLY
-		Plotter.data_sources.file1 = new DataSource(true);
-		Plotter.data_sources.file1.data = {
-			time: [0, 1, 2, 3, 4],
-			ail: [3, 4, -5, -5, 2],
-			elv: [-2, -2.5, -2, -2.1, -1.5],
-			stab: [-3, -3.2, -3.2, 2, -3.2],
-			mfs: [0.1, 0.1, 0,2, 0, 0.44],
-		};
-		Plotter.data_sources.file2 = new DataSource(true);
-		Plotter.data_sources.file2.data = {
-			time: [0, 1, 2, 3, 4],
-			ail: [2, 1, -4.2, -4.9, 1.5],
-			elv: [-2.2, -2.7, -2.2, -2.8, -0.4],
-			stab: [-3, -3.2, -3.2, 2, -3.2],
-			mfs: [0.1, 0.1, 0,2, 0, 0.44],
-		};
-		
 		pp1 = new PlotParameters('Surface Plot 1');
 		Plotter.plot_parameters_array.push(pp1);
 		pp1.addParameter(Plotter.data_sources, 'time', 's', true);
 		pp1.addParameter(Plotter.data_sources, 'ail', 'deg', true);
-		pp1.addParameter(Plotter.data_sources, 'elv', 'deg', false);
+		pp1.addParameter(Plotter.data_sources, 'mfs', 'deg', false);
 
 		$('main').append('<div class="plot_container">\
 			<canvas class="plot_main" width="5" height="5"></canvas>\
@@ -64,6 +44,9 @@ var modal_preconstruction = function(){
 		
 		Plotter.redraw();
 	});
+	
+	
+	/* Data Management Modal*/
 	
 	$('#btn_data_management').click(function(){
 		$('#data_modal').dialog('close');
@@ -86,6 +69,60 @@ var modal_preconstruction = function(){
 			}
 			],
 		});
+	});
+	
+	$('#btn_add_data').click(function(){
+		$('#file_add_data').click();
+	});
+	
+	$('#file_add_data').change(function(e){
+		// asynchronous read
+		var file = e.target.files[0];
+		Plotter.read(file, 
+			function(progress){
+				// on reading function
+			
+				$("#btn_add_data").hide(0);
+				$("#data_progress").show(0).progressbar({
+					value: progress
+				});
+			}, 
+			function(){
+				// complete function
+			
+				$("#data_progress").hide(0);
+				$("#btn_add_data").show(0);
+				
+				// clear file input
+				$('#file_add_data').val("");
+			
+				// add row to data layout
+				var id = file.name.replaceAll(' ', '-');
+				if ($('input[filename="' + file.name + '"]').length == 0){
+					$('#data_management_modal > fieldset').append('\
+					<div class="data_file_row">\
+						<label for="checkbox-' + id + '">' + id + '</label>\
+						<input type="checkbox" id="checkbox-' + id + '" filename = "' + file.name + '" ">\
+						<button class="orange delete">DEL</button>\
+					</div>');
+					
+					// make checkbox
+					$("input[type='checkbox']")
+						.change(function(){
+							var filename = $(this).attr("filename");
+							Plotter.data_sources[filename].active = this.checked;
+						})
+						.checkboxradio()
+						.prop("checked", true)
+						.checkboxradio("refresh");
+						
+					// delete button
+					$('input[filename="' + file.name + '"]').siblings("button.delete").click(function(){
+						delete Plotter.data_sources[file.name];
+						$(this).parent().remove();
+					});
+				}
+			});
 	});
 }
 

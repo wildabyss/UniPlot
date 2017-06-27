@@ -1,5 +1,6 @@
 public/css/integrated.css
 vendor/*
+test/*
 
 scss/prepros-6.config
 public/hello.html

@@ -288,6 +288,70 @@ var Plotter = (function(){
 	};
 	
 	
+	var parseDataLine = function(data_sources, file_name, line, line_index){
+		var delimiter = '';
+		var title_line = 0;
+		var terminator = false;
+		if (file_name.endsWith(".csv")){
+			delimiter = /,/;
+			title_line = 0;
+			terminator = false;
+		} else if (file_name.endsWith(".ftest") || file_name.endsWith(".sim")){
+			delimiter = /\s+/;
+			title_line = 6;
+			terminator = "%%";
+		}
+		
+		if (line_index < title_line)
+			return true;
+		else {
+			var split_arr = line.split(delimiter);
+		
+			var ind = 0;
+			var terminator_reached = false;
+			split_arr.every(function(el){
+				el = el.trim();
+				
+				if (terminator !== false && el.startsWith(terminator)){
+					// terminator reached
+					terminator_reached = true;
+					return false;	// break loop
+					
+				} else if (line_index == title_line){
+					// title line
+					
+					// uniform time identifier
+					if (el == 't')
+						el = 'time';
+					else if (el == "")
+						return true;	// skip iteration
+					
+					if (!data_sources[file_name].data.hasOwnProperty(el))
+						data_sources[file_name].fields.push(el);
+					data_sources[file_name].data[el] = [];
+				} else {
+					// data line
+					
+					if (el == "")
+						return true;	// skip iteration
+					else {
+						var field = data_sources[file_name].fields[ind];
+						data_sources[file_name].data[field].push(parseFloat(el));
+					}
+				}
+				
+				ind++;
+				return true;
+			});
+			
+			if (terminator_reached)
+				return false;
+		}
+		
+		return true;
+	}
+	
+	
 	/* PUBLIC MEMBERS */
 	
 	return {
@@ -330,6 +394,53 @@ var Plotter = (function(){
 			if (!no_redraw)
 				this.redraw();
 		},
+		
+		
+		/**
+		 * Read an external file to parse data
+		 * file: File object
+		 * fn_reading: function handle to perform while reading file
+		 * fn_complete: function handle to perform after reading finished
+		 */
+		read: function(file, fn_reading, fn_complete){
+			if (!(window.File && window.FileReader && window.FileList && window.Blob))
+				throw "Unsupported browser";
+		
+			if (!file.name.endsWith(".csv") && !file.name.endsWith(".ftest") && !file.name.endsWith(".sim")){
+				throw "Unrecognized file type";
+			}
+		
+			var reader = new LineNavigator(file, {chunkSize: 1024*16});
+			Plotter.data_sources[file.name] = new DataSource(true);
+			
+			reader.readSomeLines(0, function linesReadHandler(err, index, lines, isEof, progress) {
+				// Error happened
+				if (err) throw err;
+
+				// Custom function handle while reading data
+				fn_reading(progress);
+				
+				// Reading lines
+				for (var i = 0; i < lines.length; i++) {
+					var line_index = index + i;
+					var line = lines[i];
+
+					if (parseDataLine(Plotter.data_sources, file.name, line, line_index) === false){
+						fn_complete();
+						return;
+					}
+				}
+
+				// End of file
+				if (isEof) {
+					fn_complete();
+					return;
+				}
+
+				// Reading next chunk, adding number of lines read to first line in current chunk
+				reader.readSomeLines(index + lines.length, linesReadHandler);
+			});     
+		}
 	};
 
 })();

@@ -5,10 +5,8 @@ function DataSource(active){
 	if (typeof active != "boolean")
 		throw "parameter must be a boolean";
 
-	this.data = {
-		time: [0, 10],
-	};
-	
+	this.data = {};
+	this.fields = [];
 	this.active = active;
 }
 
@@ -104,10 +102,10 @@ PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_n
 			data_source = data_sources[source_name];
 			
 			if (this.hor_zoom[0] == this.hor_zoom[1]){
-				this.setHorizontalZoom(getMinOfArray(data_source.data[parameter_name]), getMaxOfArray(data_source.data[parameter_name]));
+				this.setHorizontalZoom(data_source.data[parameter_name].min(), data_source.data[parameter_name].max());
 			} else {
-				this.setHorizontalZoom(Math.min(this.hor_zoom[0], getMinOfArray(data_source.data[parameter_name])), 
-					Math.max(this.hor_zoom[1], getMaxOfArray(data_source.data[parameter_name])));
+				this.setHorizontalZoom(Math.min(this.hor_zoom[0], data_source.data[parameter_name].min()), 
+					Math.max(this.hor_zoom[1], data_source.data[parameter_name].max()));
 			}
 		}
 	} else if (this.parameters[parameter_name].is_primary) {
@@ -116,10 +114,10 @@ PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_n
 			data_source = data_sources[source_name];
 			
 			if (this.pri_vert_zoom[0] == this.pri_vert_zoom[1])
-				this.setPriVerticalZoom(getMinOfArray(data_source.data[parameter_name]), getMaxOfArray(data_source.data[parameter_name]));
+				this.setPriVerticalZoom(data_source.data[parameter_name].min(), data_source.data[parameter_name].max());
 			else
-				this.setPriVerticalZoom(Math.min(this.pri_vert_zoom[0],getMinOfArray(data_source.data[parameter_name])), 
-					Math.max(this.pri_vert_zoom[1],getMaxOfArray(data_source.data[parameter_name])));
+				this.setPriVerticalZoom(Math.min(this.pri_vert_zoom[0],data_source.data[parameter_name].min()), 
+					Math.max(this.pri_vert_zoom[1],data_source.data[parameter_name].max()));
 		}
 		
 	} else {
@@ -128,10 +126,10 @@ PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_n
 			data_source = data_sources[source_name];
 			
 			if (this.sec_vert_zoom[0] == this.sec_vert_zoom[1])
-				this.setSecVerticalZoom(getMinOfArray(data_source.data[parameter_name]), getMaxOfArray(data_source.data[parameter_name]));
+				this.setSecVerticalZoom(data_source.data[parameter_name].min(), data_source.data[parameter_name].max());
 			else
-				this.setSecVerticalZoom(Math.min(this.sec_vert_zoom[0],getMinOfArray(data_source.data[parameter_name])), 
-					Math.max(this.sec_vert_zoom[1],getMaxOfArray(data_source.data[parameter_name])));
+				this.setSecVerticalZoom(Math.min(this.sec_vert_zoom[0],data_source.data[parameter_name].min()), 
+					Math.max(this.sec_vert_zoom[1],data_source.data[parameter_name].max()));
 		}
 	}
 }
