@@ -122,6 +122,9 @@ var modal_preconstruction = function(){
 						$(this).parent().remove();
 					});
 				}
+				
+				// redraw plots
+				Plotter.redraw();
 			});
 	});
 }
@@ -141,6 +144,24 @@ $(document).ready(function(){
 	
 	modal_preconstruction();
 	
+	// refresh button
+	$('.btn_refresh').click(function(){
+		Plotter.reload(function(progress){
+			// on reading function
+			
+			$("button.btn_refresh").parent().hide(0);
+			$("#refresh_progress").show(0).progressbar({
+				value: progress
+			});
+		}, function(){
+			// complete function
+			
+			$("#refresh_progress").hide(0);
+			$("button.btn_refresh").parent().show(0);
+			
+			
+		});
+	});
 	
 	// data button
 	$('.btn_data').click(function(){

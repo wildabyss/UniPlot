@@ -5,7 +5,11 @@ function DataSource(active){
 	if (typeof active != "boolean")
 		throw "parameter must be a boolean";
 
+	// File object
+	this.file = {};
+	// associative array with key being fields, value = 1-D array
 	this.data = {};
+	// array of strings
 	this.fields = [];
 	this.active = active;
 }

@@ -16,7 +16,7 @@ div#haze {
 
 header{
 	line-height: 50px;
-	background-color: $grey;
+	background-color: $translucentGrey;
 	font-size: 20px;
 	display: flex;
 	
@@ -28,8 +28,17 @@ header{
 		display: inline-block;
 	}
 
-	ul#desktop_menu{
+	ul#top_menu{
 		flex: 1;
+		
+		li#refresh_progress{
+			width: 150px;
+			display: none;
+			margin-top: 13px;
+			margin-right: 5px;
+			float: right;
+			height: 30px;
+		}
 	}
 	
 	ul#mobile_menu{
@@ -43,12 +52,18 @@ header{
 			flex: 1;
 		}
 		
-		ul#desktop_menu{
-			display: none;
+		ul#top_menu{
+			flex: 0;
+			background-color: $almostBlack;
+			padding-right: 10px;
+			
+			li.hide_mobile{
+				display: none;
+			}
 		}
 	
 		#mobile_menu_trigger{
-			background-image: url("/imgs/menu_burger.png");
+			background-image: url("../imgs/menu_burger.png");
 			background-repeat: no-repeat;
 			background-position: center center;
 			width: 40px;
@@ -99,3 +114,6 @@ main{
 	margin-top: 10px;
 }
 
+.ui-progressbar-value{
+	background-color: $green;
+}

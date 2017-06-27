@@ -8,9 +8,10 @@
 		
 		<!-- layout and styles -->
 		<title>UniPlot</title>
-		<link rel="stylesheet" href="./css/integrated.css" type="text/css" media="screen">
+		<link rel="stylesheet" href="./css/jquery-ui.min.css" type="text/css" media="screen">
 		<link rel="stylesheet" href="./css/jquery-ui.structure.min.css" type="text/css" media="screen">
 		<link rel="stylesheet" href="./css/jquery-ui.theme.min.css" type="text/css" media="screen">
+		<link rel="stylesheet" href="./css/font-awesome.min.css" type="text/css" media="screen">
 		<link rel="stylesheet" href="./css/integrated.css" type="text/css" media="screen">
 	</head>
 	<body>
@@ -32,12 +33,14 @@
 				<div id="mobile_menu_trigger"></div>
 				<a class="logo">UniPlot</a>
 				
-				<ul id="desktop_menu" class="button_group">
-					<li><button class="green btn_data">Data</button></li>
-					<li><button class="blue btn_load">Load</button></li>
-					<li><button class="blue btn_save">Save</button></li>
-					<li><button class="teal btn_annotate">Annotate</button></li>
-					<li><button class="teal btn_zoom">Zoom</button></li>
+				<ul id="top_menu" class="button_group">
+					<li class="hide_mobile"><button class="green btn_data">Data</button></li>
+					<li class="hide_mobile"><button class="blue btn_load">Load</button></li>
+					<li class="hide_mobile"><button class="blue btn_save">Save</button></li>
+					<li class="hide_mobile"><button class="teal btn_annotate">Annotate</button></li>
+					<li class="hide_mobile"><button class="teal btn_zoom">Zoom</button></li>
+					<li><button class="teal fa fa-refresh btn_refresh" aria-hidden="true"></button></li>
+					<li id="refresh_progress"></li>
 				</ul>
 				
 				<ul id="mobile_menu">

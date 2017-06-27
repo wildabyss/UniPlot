@@ -412,6 +412,7 @@ var Plotter = (function(){
 		
 			var reader = new LineNavigator(file, {chunkSize: 1024*16});
 			Plotter.data_sources[file.name] = new DataSource(true);
+			Plotter.data_sources[file.name].file = file;
 			
 			reader.readSomeLines(0, function linesReadHandler(err, index, lines, isEof, progress) {
 				// Error happened
@@ -440,6 +441,13 @@ var Plotter = (function(){
 				// Reading next chunk, adding number of lines read to first line in current chunk
 				reader.readSomeLines(index + lines.length, linesReadHandler);
 			});     
+		},
+		
+		
+		reload: function(fn_reading, fn_complete){
+			for (var filename in Plotter.data_sources){
+				this.read(Plotter.data_sources[filename].file, fn_reading, fn_complete);
+			}
 		}
 	};
 
