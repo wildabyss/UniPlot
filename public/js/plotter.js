@@ -32,6 +32,8 @@ var Plotter = (function(){
 
 	var time = 'time';
 	
+	var _accepted_extensions = ['.sim', '.ftest', '.csv'];
+	
 	var setLineStyle = function(ctx, file_counter, param_counter){
 		if (file_counter == 0)
 			ctx.setLineDash([]);
@@ -359,6 +361,8 @@ var Plotter = (function(){
 		plot_parameters_array: [],
 		data_sources: {},
 		
+		accepted_extensions: _accepted_extensions,
+		
 		redraw: function(){
 			refit();
 			
@@ -408,7 +412,7 @@ var Plotter = (function(){
 				throw "Unsupported browser";
 			
 			var file = (files instanceof Array)?files[file_ind]:files;
-			if (!file.name.endsWith(".csv") && !file.name.endsWith(".ftest") && !file.name.endsWith(".sim")){
+			if (!file.name.endsWith(_accepted_extensions)){
 				throw "Unrecognized file type";
 			}
 		
@@ -460,10 +464,14 @@ var Plotter = (function(){
 		reload: function(fn_reading, fn_complete){
 			var files = [];
 			for (var filename in Plotter.data_sources){
-				files.push(Plotter.data_sources[filename].file);
+				var data_source = Plotter.data_sources[filename];
+				
+				if (data_source.active)
+					files.push(data_source.file);
 			}
 			
-			this.read(files, fn_reading, fn_complete, 0);
+			if (files.length > 0)
+				this.read(files, fn_reading, fn_complete, 0);
 		}
 	};
 

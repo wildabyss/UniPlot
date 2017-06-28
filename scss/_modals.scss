@@ -14,7 +14,7 @@ aside.modal_container{
 			display: flex;
 			margin-bottom: 5px;
 			
-			label{
+			label.checkbox{
 				flex: 1;
 				text-align: left;
 				line-height: 18px;
@@ -73,5 +73,9 @@ aside#plot_management_modal{
 	
 	fieldset{
 		height: 62vh;
+		
+		label.toggle{
+			line-height: 18px;
+		}
 	}
 }

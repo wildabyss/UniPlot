@@ -16,15 +16,31 @@ Array.prototype.min = function() {
  * Check if String ends with pattern
  */
 String.prototype.endsWith = function(pattern) {
-    var d = this.length - pattern.length;
-    return d >= 0 && this.lastIndexOf(pattern) === d;
+	if (pattern instanceof Array){
+		var str = this;
+		
+		return pattern.some(function(el){
+			var d = str.length - el.length;
+			return d >= 0 && str.lastIndexOf(el) === d;
+		});
+	} else {
+		var d = this.length - pattern.length;
+		return d >= 0 && this.lastIndexOf(pattern) === d;
+	}
 };
 
 /**
  * Check if String starts with pattern
  */
 String.prototype.startsWith = function(pattern) {
-    return this.length>=pattern.length && this.indexOf(pattern) === 0;
+	if (pattern instanceof Array){
+		var str = this;
+		
+		return pattern.some(function(el){
+			return str.length>=el.length && str.indexOf(el) === 0;
+		});
+	} else
+		return this.length>=pattern.length && this.indexOf(pattern) === 0;
 };
 
 /**

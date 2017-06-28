@@ -95,6 +95,11 @@ var modal_preconstruction = function(){
 			}
 			],
 		});
+		
+		var accept = "";
+		for (var i=0; i<Plotter.accepted_extensions.length; i++)
+			accept += (i==0)?"":"," + Plotter.accepted_extensions[i]
+		$("input#file_add_data").attr("accept", accept);
 	});
 	
 	$('#btn_add_data').click(function(){
@@ -126,14 +131,14 @@ var modal_preconstruction = function(){
 				var id = file.name.replaceAll(' ', '-');
 				if ($('input[filename="' + file.name + '"]').length == 0){
 					$('#data_management_modal > fieldset').append('\
-					<div class="data_row">\
-						<label for="checkbox-' + id + '">' + id + '</label>\
-						<input type="checkbox" id="checkbox-' + id + '" filename = "' + file.name + '" ">\
-						<button class="orange delete"><i class="fa fa-times fa-lg" aria-hidden="true"></i></button>\
-					</div>');
+						<div class="data_row">\
+							<label class="checkbox" for="checkbox-' + id + '">' + id + '</label>\
+							<input type="checkbox" id="checkbox-' + id + '" filename = "' + file.name + '" ">\
+							<button class="orange delete"><i class="fa fa-times fa-lg" aria-hidden="true"></i></button>\
+						</div>');
 					
 					// make checkbox
-					$("input[type='checkbox']")
+					$('input[filename="' + file.name + '"]')
 						.change(function(){
 							var filename = $(this).attr("filename");
 							Plotter.data_sources[filename].active = this.checked;
