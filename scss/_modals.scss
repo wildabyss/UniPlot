@@ -2,6 +2,10 @@
 	display: none;
 }
 
+.ui-selectmenu-button.ui-button{
+	width: auto;
+}
+
 aside.modal_container{
 	display: none;
 	
@@ -39,11 +43,6 @@ aside#data_management_modal{
 
 aside#plot_management_modal{
 	
-	button#btn_add_plot{
-		width: 100%;
-		margin-bottom: 5px;
-	}
-	
 	.plot_row{
 		margin-bottom: 5px;
 		display: flex;
@@ -54,6 +53,7 @@ aside#plot_management_modal{
 		
 		button{
 			margin-left: 2px;
+			width: 38px;
 		}
 	}
 	

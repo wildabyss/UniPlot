@@ -13,6 +13,35 @@ Array.prototype.min = function() {
 }
 
 /**
+ * Perform binary search on sorted array
+ * Return: index of val if found, -1 if not
+ */
+Array.prototype.binarySearch = function(searchElement){
+	var minIndex = 0;
+    var maxIndex = this.length - 1;
+    var currentIndex;
+    var currentElement;
+ 
+    while (minIndex <= maxIndex) {
+        currentIndex = (minIndex + maxIndex) / 2 | 0;
+        currentElement = this[currentIndex];
+ 
+        if (currentElement < searchElement) {
+            minIndex = currentIndex + 1;
+        }
+        else if (currentElement > searchElement) {
+            maxIndex = currentIndex - 1;
+        }
+        else {
+            return currentIndex;
+        }
+    }
+ 
+    return -1;
+}
+
+
+/**
  * Check if String ends with pattern
  */
 String.prototype.endsWith = function(pattern) {

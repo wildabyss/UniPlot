@@ -29,6 +29,31 @@ var restoreScroll = function(){
 
 // To be evaluated in document.ready function
 var modal_preconstruction = function(){
+	/* Plots Management Modal */
+
+	var regeneratePlotSelect = function(sel_index){
+		var sel_plots = $('select#sel_plots');
+		sel_plots.empty();
+		// populate the plots container
+		if (Plotter.plot_parameters_array.length == 0){
+			// add the placeholder
+			sel_plots.append('<option value="-1">NO PLOT</option>');
+		} else {
+			for (var i=0; i<Plotter.plot_parameters_array.length; i++){
+				sel_plots.append('<option value="'+i+'">'+Plotter.plot_parameters_array[i].title+'</option>');
+			}
+		}
+		
+		// make selection
+		if (sel_index === 'undefined')
+			sel_plots.val("-1");
+		else
+			sel_plots.val(sel_index);
+		
+		// UI graphics
+		sel_plots.selectmenu().selectmenu('refresh');
+	};
+	
 	$('#btn_plots_management').click(function(){
 		// TEST ONLY
 		/*pp1 = new PlotParameters('Surface Plot 1');
@@ -64,12 +89,67 @@ var modal_preconstruction = function(){
 			],
 		});
 		
-		$("#sel_plots").selectmenu();
+		regeneratePlotSelect();
+		
+		// populate the parameters list (sorted)
+		var parameters_list = [];
+		for (var data_name in Plotter.data_sources){
+			var data_source = Plotter.data_sources[data_name];
+			if (data_source.active){
+				data_source.fields.forEach(function(field){
+					if (parameters_list.binarySearch(field) == -1){
+						parameters_list.push(field);
+						parameters_list.sort();
+					}
+				});
+			}
+		}
+		
+		// add parameters list to container
+		var fieldset = $('#plots_management_modal fieldset');
+		fieldset.empty();
+		parameters_list.forEach(function(field){
+			var checkbox_id = 'sel-param-'+field;
+			var toggle_id = 'toggle-axis-'+field;
+		
+			fieldset.append('\
+				<div class="data_row">\
+					<label class="checkbox" for="' + checkbox_id + '"></label>\
+					<input type="checkbox" class="param_selector" id="' + checkbox_id + '">\
+					<label class="toggle blue" for="' + toggle_id + '">Left Axis</label>\
+					<input type="checkbox" class="axis_selector" id="' + toggle_id + '" />\
+				</div>');
+		});
+		
+		// UI graphics
 		$("#sel_x_axis").selectmenu();
+		$("#plot_management_modal input.param_selector").checkboxradio()
+		$("#plot_management_modal input.axis_selector").button();
+	});
+	
+	$('#plot_management_modal button.add').click(function(){
+		var new_len = Plotter.plot_parameters_array.length+1;
+		Plotter.plot_parameters_array.push(new PlotParameters('Plot '+new_len));
 		
-		$("input[type='checkbox']").checkboxradio()
+		// add plot canvas
+		$('main').append('<div class="plot_container">\
+			<canvas class="plot_main" width="5" height="5"></canvas>\
+		</div>');
+		Plotter.redraw();
 		
-		$("#myToggleButton").button();
+		regeneratePlotSelect(new_len);
+	});
+	
+	$('#plot_management_modal button.edit').click(function(){
+		
+	});
+	
+	$('#plot_management_modal button.delete').click(function(){
+		var sel_ind = Integer.parseInt($('select#sel_plots').val());
+		
+		if (sel_ind > -1){
+			
+		}
 	});
 	
 	
@@ -98,7 +178,7 @@ var modal_preconstruction = function(){
 		
 		var accept = "";
 		for (var i=0; i<Plotter.accepted_extensions.length; i++)
-			accept += (i==0)?"":"," + Plotter.accepted_extensions[i]
+			accept += ((i==0)?"":",") + Plotter.accepted_extensions[i]
 		$("input#file_add_data").attr("accept", accept);
 	});
 	
@@ -130,7 +210,7 @@ var modal_preconstruction = function(){
 				// add row to data layout
 				var id = file.name.replaceAll(' ', '-');
 				if ($('input[filename="' + file.name + '"]').length == 0){
-					$('#data_management_modal > fieldset').append('\
+					$('#data_management_modal fieldset').append('\
 						<div class="data_row">\
 							<label class="checkbox" for="checkbox-' + id + '">' + id + '</label>\
 							<input type="checkbox" id="checkbox-' + id + '" filename = "' + file.name + '" ">\
