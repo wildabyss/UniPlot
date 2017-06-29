@@ -13,6 +13,7 @@ aside.modal_container{
 		width: 70vw;
 		min-width: 260px;
 		height: 70vh;
+		overflow: auto;
 		
 		.data_row{
 			display: flex;

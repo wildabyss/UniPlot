@@ -30,7 +30,35 @@ var restoreScroll = function(){
 // To be evaluated in document.ready function
 var modal_preconstruction = function(){
 	/* Plots Management Modal */
+	
+	// Update the parameters list for the current plot selection
+	var plotSelectChange = function(){
+		var fieldset = $('#plot_management_modal fieldset');
+		var sel_ind = parseInt($('select#sel_plots').val());
+	
+		if (sel_ind > -1) {
+			// change parameter selections
+			var rows = fieldset.children();
+			for (var i=0; i<rows.length; i++){
+				var row_obj = $(rows[i]);
+				var field = row_obj.find("label.checkbox").text().trim();
+				
+				if (Plotter.plot_parameters_array[sel_ind].parameters.hasOwnProperty(field)){
+					// needed the checkboxradio to fix a bug
+					row_obj.children('input.param_selector').checkboxradio().prop("checked", true).checkboxradio('refresh');
+					row_obj.children('input.axis_selector').button().prop("checked", !Plotter.plot_parameters_array[sel_ind].parameters[field].is_primary).button('refresh');
+					row_obj.children('label.toggle').text((Plotter.plot_parameters_array[sel_ind].parameters[field].is_primary?'Left Axis':'Right Axis'));
+				} else {
+					// needed the checkboxradio to fix a bug
+					row_obj.children('input.param_selector').checkboxradio().prop("checked", false).checkboxradio('refresh');
+					row_obj.children('input.axis_selector').button().prop("checked", false).button('refresh');
+					row_obj.children('label.toggle').text("Left Axis");
+				}
+			};
+		}
+	};
 
+	// Regenerate plot selection menu
 	var regeneratePlotSelect = function(sel_index){
 		var sel_plots = $('select#sel_plots');
 		sel_plots.empty();
@@ -45,30 +73,23 @@ var modal_preconstruction = function(){
 		}
 		
 		// make selection
-		if (sel_index === undefined)
-			sel_plots.val("-1");
-		else
+		if (sel_index === undefined){
+			if (Plotter.plot_parameters_array.length == 0)
+				sel_plots.val("-1");
+			else
+				sel_plots.val("0");
+		} else
 			sel_plots.val(sel_index.toString());
 		
 		// UI graphics
-		sel_plots.selectmenu().selectmenu('refresh');
+		sel_plots
+			.selectmenu({
+				change: plotSelectChange
+			})
+			.selectmenu('refresh');
 	};
 	
 	$('#btn_plots_management').click(function(){
-		// TEST ONLY
-		/*pp1 = new PlotParameters('Surface Plot 1');
-		Plotter.plot_parameters_array.push(pp1);
-		pp1.addParameter(Plotter.data_sources, 'time', 's', true);
-		pp1.addParameter(Plotter.data_sources, 'ail', 'deg', true);
-		pp1.addParameter(Plotter.data_sources, 'mfs', 'deg', false);
-
-		$('main').append('<div class="plot_container">\
-			<canvas class="plot_main" width="5" height="5"></canvas>\
-		</div>');
-		
-		
-		Plotter.redraw();*/
-		
 		$('#data_modal').dialog('close');
 		$('#plot_management_modal').dialog({
 			dialogClass: "no-close",
@@ -89,6 +110,7 @@ var modal_preconstruction = function(){
 			],
 		});
 		
+		// plot selector menu
 		regeneratePlotSelect();
 		
 		// populate the parameters list (sorted)
@@ -111,9 +133,10 @@ var modal_preconstruction = function(){
 		parameters_list.forEach(function(field){
 			var checkbox_id = 'sel-param-'+field;
 			var toggle_id = 'toggle-axis-'+field;
-		
+			
+			var style_disp = (field=='time'?' style="display:none" ':'');
 			fieldset.append('\
-				<div class="data_row">\
+				<div class="data_row"' + style_disp + '>\
 					<label class="checkbox" for="' + checkbox_id + '">' + field + '</label>\
 					<input type="checkbox" class="param_selector" id="' + checkbox_id + '">\
 					<label class="toggle blue" for="' + toggle_id + '">Left Axis</label>\
@@ -121,8 +144,11 @@ var modal_preconstruction = function(){
 				</div>');
 		});
 		
+		
 		// UI graphics
+
 		$("#sel_x_axis").selectmenu();
+		
 		$("#plot_management_modal input.param_selector")
 			.checkboxradio()
 			.change(function(e){
@@ -139,11 +165,12 @@ var modal_preconstruction = function(){
 						var is_primary = !target.siblings("input.axis_selector").is(":checked");
 						Plotter.plot_parameters_array[plot_ind].addParameter(Plotter.data_sources, param_name, '', is_primary);
 					} else
-						Plotter.plot_parameters_array[plot_ind].removeParameter(param_name);
+						Plotter.plot_parameters_array[plot_ind].removeParameter(Plotter.data_sources, param_name);
 					
 					Plotter.redraw();
 				}
 			});
+			
 		$("#plot_management_modal input.axis_selector")
 			.button()
 			.change(function(e){
@@ -162,16 +189,23 @@ var modal_preconstruction = function(){
 					var param_name = target.siblings("label.checkbox").text().trim();
 					
 					if (Plotter.plot_parameters_array[plot_ind].parameters.hasOwnProperty(param_name)){
-						Plotter.plot_parameters_array[plot_ind].parameters[param_name].is_primary = !target.is(":checked");
+						Plotter.plot_parameters_array[plot_ind].removeParameter(Plotter.data_sources, param_name);
+						Plotter.plot_parameters_array[plot_ind].addParameter(Plotter.data_sources, param_name, '', !target.is(":checked"));
 						Plotter.redraw();
 					}
 				}
 			});;
+		
+		// refresh parameter selection states
+		plotSelectChange();
 	});
 	
+	// Add a plot
 	$('#plot_management_modal button.add').click(function(){
 		var new_len = Plotter.plot_parameters_array.length+1;
-		Plotter.plot_parameters_array.push(new PlotParameters('Plot '+new_len));
+		var plot_parameters = new PlotParameters('Plot '+new_len);
+		plot_parameters.addParameter(Plotter.data_sources, 'time', '', true);
+		Plotter.plot_parameters_array.push(plot_parameters);
 		
 		// add plot canvas
 		$('main').append('<div class="plot_container">\
@@ -179,18 +213,29 @@ var modal_preconstruction = function(){
 		</div>');
 		Plotter.redraw();
 		
+		// select menu and parameter list
 		regeneratePlotSelect(new_len-1);
+		plotSelectChange();
 	});
 	
+	// Rename a plot
 	$('#plot_management_modal button.edit').click(function(){
 		
 	});
 	
+	// Remove a plot
 	$('#plot_management_modal button.delete').click(function(){
 		var sel_ind = parseInt($('select#sel_plots').val());
-		console.log(sel_ind);
 		if (sel_ind > -1){
-			console.log(sel_ind);
+			// remove data set
+			Plotter.plot_parameters_array.splice(sel_ind, 1);
+			
+			// plot selector change
+			regeneratePlotSelect();
+			plotSelectChange();
+			
+			// remove canvas
+			$('main').children(".plot_container:eq("+sel_ind+")").remove();
 		}
 	});
 	

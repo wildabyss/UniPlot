@@ -71,7 +71,7 @@ PlotParameters.prototype.addParameter = function(data_sources, parameter_name, u
 /**
  * Remove Parameter from the data array
  */
-PlotParameters.prototype.removeParameter = function(parameter_name){
+PlotParameters.prototype.removeParameter = function(data_sources, parameter_name){
 	if (!this.parameters.hasOwnProperty(parameter_name))
 		return;
 	
@@ -81,6 +81,9 @@ PlotParameters.prototype.removeParameter = function(parameter_name){
 	else
 		this.size_secondary--;
 	delete this.parameters[parameter_name];
+	
+	// rezoom
+	this.revertZoom(data_sources);
 };
 
 
@@ -123,7 +126,6 @@ PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_n
 				this.setPriVerticalZoom(Math.min(this.pri_vert_zoom[0],data_source.data[parameter_name].min()), 
 					Math.max(this.pri_vert_zoom[1],data_source.data[parameter_name].max()));
 		}
-		
 	} else {
 		// secondary vertical zoom
 		for (source_name in data_sources){
@@ -136,15 +138,18 @@ PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_n
 					Math.max(this.sec_vert_zoom[1],data_source.data[parameter_name].max()));
 		}
 	}
-}
+};
 
 
 /**
  * Revert zoom levels to the maximum bounds that data allow
  */
 PlotParameters.prototype.revertZoom = function(data_sources){
+	this.setHorizontalZoom(0,0);
+	this.setPriVerticalZoom(0,0);
+	this.setSecVerticalZoom(0,0);
+
 	for (parameter_name in this.parameters){
-		if (parameter_name != this.xvar)
-			this.setZoomOnParameter(data_sources, parameter_name);
+		this.setZoomOnParameter(data_sources, parameter_name);
 	}
-}
+};
