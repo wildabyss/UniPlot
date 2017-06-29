@@ -45,10 +45,10 @@ var modal_preconstruction = function(){
 		}
 		
 		// make selection
-		if (sel_index === 'undefined')
+		if (sel_index === undefined)
 			sel_plots.val("-1");
 		else
-			sel_plots.val(sel_index);
+			sel_plots.val(sel_index.toString());
 		
 		// UI graphics
 		sel_plots.selectmenu().selectmenu('refresh');
@@ -106,7 +106,7 @@ var modal_preconstruction = function(){
 		}
 		
 		// add parameters list to container
-		var fieldset = $('#plots_management_modal fieldset');
+		var fieldset = $('#plot_management_modal fieldset');
 		fieldset.empty();
 		parameters_list.forEach(function(field){
 			var checkbox_id = 'sel-param-'+field;
@@ -114,7 +114,7 @@ var modal_preconstruction = function(){
 		
 			fieldset.append('\
 				<div class="data_row">\
-					<label class="checkbox" for="' + checkbox_id + '"></label>\
+					<label class="checkbox" for="' + checkbox_id + '">' + field + '</label>\
 					<input type="checkbox" class="param_selector" id="' + checkbox_id + '">\
 					<label class="toggle blue" for="' + toggle_id + '">Left Axis</label>\
 					<input type="checkbox" class="axis_selector" id="' + toggle_id + '" />\
@@ -123,8 +123,50 @@ var modal_preconstruction = function(){
 		
 		// UI graphics
 		$("#sel_x_axis").selectmenu();
-		$("#plot_management_modal input.param_selector").checkboxradio()
-		$("#plot_management_modal input.axis_selector").button();
+		$("#plot_management_modal input.param_selector")
+			.checkboxradio()
+			.change(function(e){
+				// get selected plot
+				var plot_ind = $('select#sel_plots').val();
+				if (plot_ind > -1){
+					var target = $(e.target);
+					
+					// get changed parameter
+					var param_name = target.siblings("label[for='"+target.attr('id')+"']").text().trim();
+					
+					if (target.is(":checked")){
+						// get left/right axis
+						var is_primary = !target.siblings("input.axis_selector").is(":checked");
+						Plotter.plot_parameters_array[plot_ind].addParameter(Plotter.data_sources, param_name, '', is_primary);
+					} else
+						Plotter.plot_parameters_array[plot_ind].removeParameter(param_name);
+					
+					Plotter.redraw();
+				}
+			});
+		$("#plot_management_modal input.axis_selector")
+			.button()
+			.change(function(e){
+				var target = $(e.target);
+				
+				// UI change
+				if (target.is(":checked"))
+					target.siblings("label[for='"+target.attr('id')+"']").text("Right Axis");
+				else
+					target.siblings("label[for='"+target.attr('id')+"']").text("Left Axis");
+				
+				// get selected plot
+				var plot_ind = $('select#sel_plots').val();
+				if (plot_ind > -1){
+					// associated parameter name
+					var param_name = target.siblings("label.checkbox").text().trim();
+					
+					if (Plotter.plot_parameters_array[plot_ind].parameters.hasOwnProperty(param_name)){
+						Plotter.plot_parameters_array[plot_ind].parameters[param_name].is_primary = !target.is(":checked");
+						Plotter.redraw();
+					}
+				}
+			});;
 	});
 	
 	$('#plot_management_modal button.add').click(function(){
@@ -137,7 +179,7 @@ var modal_preconstruction = function(){
 		</div>');
 		Plotter.redraw();
 		
-		regeneratePlotSelect(new_len);
+		regeneratePlotSelect(new_len-1);
 	});
 	
 	$('#plot_management_modal button.edit').click(function(){
@@ -145,10 +187,10 @@ var modal_preconstruction = function(){
 	});
 	
 	$('#plot_management_modal button.delete').click(function(){
-		var sel_ind = Integer.parseInt($('select#sel_plots').val());
-		
+		var sel_ind = parseInt($('select#sel_plots').val());
+		console.log(sel_ind);
 		if (sel_ind > -1){
-			
+			console.log(sel_ind);
 		}
 	});
 	

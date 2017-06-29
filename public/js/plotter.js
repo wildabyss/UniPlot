@@ -276,7 +276,9 @@ var Plotter = (function(){
 				}
 				ctx.textBaseline = "top";
 				ctx.font = label_font+"px Arial";
-				ctx.fillText(parameter_name + " ("+plot_parameters.parameters[parameter_name].unit+")" + " ["+source_name+"]", legend_x, legend_y);
+				ctx.fillText(parameter_name + 
+					(plot_parameters.parameters[parameter_name].unit=="" ? "" : " ("+plot_parameters.parameters[parameter_name].unit+")") + 
+					(Object.keys(data_sources).length <= 1 ? "" : " ["+source_name+"]"), legend_x, legend_y);
 				ctx.stroke();
 				
 				file_counter++;
