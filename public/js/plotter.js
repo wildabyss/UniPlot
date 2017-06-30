@@ -112,7 +112,7 @@ var Plotter = (function(){
 			var file_counter = 0;
 			for (source_name in data_sources){
 				var data_source = data_sources[source_name];
-				if (!data_source.active)
+				if (!data_source.active || !data_source.data.hasOwnProperty(parameter_name))
 					continue;
 			
 				// color
@@ -248,7 +248,7 @@ var Plotter = (function(){
 			var file_counter = 0;
 			for (source_name in data_sources){
 				var data_source = data_sources[source_name];
-				if (!data_source.active)
+				if (!data_source.active || !data_source.data.hasOwnProperty(parameter_name))
 					continue;
 					
 				// color

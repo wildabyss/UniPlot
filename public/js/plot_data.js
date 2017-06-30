@@ -104,34 +104,29 @@ PlotParameters.prototype.setSecVerticalZoom = function(min, max){
 	this.sec_vert_zoom[1] = max;
 };
 PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_name){
-	if (parameter_name == this.xvar){
-		// horizontal zoom
-		for (source_name in data_sources){
-			data_source = data_sources[source_name];
-			
-			if (this.hor_zoom[0] == this.hor_zoom[1]){
+	for (source_name in data_sources){
+		data_source = data_sources[source_name];
+		
+		// check parameter exists in source
+		if (!data_source.data.hasOwnProperty(parameter_name))
+			continue;
+		
+		if (parameter_name == this.xvar){
+			// horizontal zoom
+			if (this.hor_zoom[0] == this.hor_zoom[1])
 				this.setHorizontalZoom(data_source.data[parameter_name].min(), data_source.data[parameter_name].max());
-			} else {
+			else 
 				this.setHorizontalZoom(Math.min(this.hor_zoom[0], data_source.data[parameter_name].min()), 
 					Math.max(this.hor_zoom[1], data_source.data[parameter_name].max()));
-			}
-		}
-	} else if (this.parameters[parameter_name].is_primary) {
-		// primary vertical zoom
-		for (source_name in data_sources){
-			data_source = data_sources[source_name];
-			
+		} else if (this.parameters[parameter_name].is_primary) {
+			// primary vertical zoom
 			if (this.pri_vert_zoom[0] == this.pri_vert_zoom[1])
 				this.setPriVerticalZoom(data_source.data[parameter_name].min(), data_source.data[parameter_name].max());
 			else
 				this.setPriVerticalZoom(Math.min(this.pri_vert_zoom[0],data_source.data[parameter_name].min()), 
 					Math.max(this.pri_vert_zoom[1],data_source.data[parameter_name].max()));
-		}
-	} else {
-		// secondary vertical zoom
-		for (source_name in data_sources){
-			data_source = data_sources[source_name];
-			
+		} else {
+			// secondary vertical zoom
 			if (this.sec_vert_zoom[0] == this.sec_vert_zoom[1])
 				this.setSecVerticalZoom(data_source.data[parameter_name].min(), data_source.data[parameter_name].max());
 			else
