@@ -199,7 +199,7 @@ var Plotter = (function(){
 			var tick = i*(maxX-minX)/hor_n + minX;
 			
 			ctx.textAlign = "center";
-			ctx.fillText(tick, loc, top_offset + vert_res_with_offset + label_font/2 + 5);
+			ctx.fillText(tick.toFixed(2), loc, top_offset + vert_res_with_offset + label_font/2 + 5);
 		}
 		
 		// draw y-ticks
@@ -208,7 +208,7 @@ var Plotter = (function(){
 			var tick = i*(maxY_pri-minY_pri)/vert_n + minY_pri;
 			
 			ctx.textAlign = "right";
-			ctx.fillText(tick, side_offset - label_font/2 - 3, loc);
+			ctx.fillText(tick.toFixed(2), side_offset - label_font/2 - 3, loc);
 		}
 		
 		// draw y-ticks (secondary axis)
@@ -218,7 +218,7 @@ var Plotter = (function(){
 				var tick = i*(maxY_sec-minY_sec)/vert_n + minY_sec;
 				
 				ctx.textAlign = "left";
-				ctx.fillText(tick, side_offset + hor_res_with_offset + label_font/2 + 3, loc);
+				ctx.fillText(tick.toFixed(2), side_offset + hor_res_with_offset + label_font/2 + 3, loc);
 			}
 		}
 		

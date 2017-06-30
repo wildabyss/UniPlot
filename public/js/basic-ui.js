@@ -55,6 +55,11 @@ var modal_preconstruction = function(){
 					row_obj.children('label.toggle').text("Left Axis");
 				}
 			};
+			
+			// change xvar selection
+			$('#plot_management_modal #sel_x_axis')
+				.val(Plotter.plot_parameters_array[sel_ind].xvar)
+				.selectmenu('refresh');
 		}
 	};
 
@@ -129,11 +134,19 @@ var modal_preconstruction = function(){
 		
 		// add parameters list to container
 		var fieldset = $('#plot_management_modal fieldset');
-		fieldset.empty();
+		var xvar_select = $('#plot_management_modal #sel_x_axis');
+		fieldset.empty(); xvar_select.empty();
 		parameters_list.forEach(function(field){
 			var checkbox_id = 'sel-param-'+field;
 			var toggle_id = 'toggle-axis-'+field;
 			
+			// append to xvar selector
+			xvar_select.append($('<option>', {
+				value: field,
+				text: field,
+			}));
+			
+			// append to fieldset
 			var style_disp = (field=='time'?' style="display:none" ':'');
 			fieldset.append('\
 				<div class="data_row"' + style_disp + '>\
@@ -147,7 +160,15 @@ var modal_preconstruction = function(){
 		
 		// UI graphics
 
-		$("#sel_x_axis").selectmenu();
+		$("#sel_x_axis").selectmenu({
+			change: function(){
+				var sel_ind = parseInt($('select#sel_plots').val());
+				if (sel_ind > -1){
+					Plotter.plot_parameters_array[sel_ind].xvar = $(this).val();
+					Plotter.redraw();
+				}
+			}
+		});
 		
 		$("#plot_management_modal input.param_selector")
 			.checkboxradio()
