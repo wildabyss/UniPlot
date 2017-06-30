@@ -164,7 +164,11 @@ var modal_preconstruction = function(){
 			change: function(){
 				var sel_ind = parseInt($('select#sel_plots').val());
 				if (sel_ind > -1){
-					Plotter.plot_parameters_array[sel_ind].xvar = $(this).val();
+					var param_name = $(this).val();
+					Plotter.plot_parameters_array[sel_ind].xvar = param_name;
+					Plotter.plot_parameters_array[sel_ind].addParameter(Plotter.data_sources, param_name, '', true);
+					
+					plotSelectChange();
 					Plotter.redraw();
 				}
 			}
@@ -185,8 +189,15 @@ var modal_preconstruction = function(){
 						// get left/right axis
 						var is_primary = !target.siblings("input.axis_selector").is(":checked");
 						Plotter.plot_parameters_array[plot_ind].addParameter(Plotter.data_sources, param_name, '', is_primary);
-					} else
+					} else{
 						Plotter.plot_parameters_array[plot_ind].removeParameter(Plotter.data_sources, param_name);
+						if (Plotter.plot_parameters_array[plot_ind].xvar == param_name){
+							Plotter.plot_parameters_array[plot_ind].xvar = 'time';
+							Plotter.plot_parameters_array[plot_ind].addParameter(Plotter.data_sources, 'time', '', true);
+							
+							plotSelectChange();
+						}
+					}
 					
 					Plotter.redraw();
 				}

@@ -64,7 +64,8 @@ PlotParameters.prototype.addParameter = function(data_sources, parameter_name, u
 	this.parameters[parameter_name] = new this.Parameter(unit, is_primary); 
 	
 	// rezoom
-	this.setZoomOnParameter(data_sources, parameter_name);
+	//this.setZoomOnParameter(data_sources, parameter_name);
+	this.revertZoom(data_sources);
 };
 
 
