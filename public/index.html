@@ -82,13 +82,17 @@
 			</aside>
 			
 			<aside class="modal_container" id="plot_management_modal">
-				<div class="plot_row">
+				<div class="plot_row" id="sel_plots_row">
 					<select id="sel_plots"></select>
 					<button class="green add"><i class="fa fa-plus fa-lg" aria-hidden="true"></i></button>
 					<button class="orange edit"><i class="fa fa-pencil fa-lg" aria-hidden="true"></i></button>
 					<button class="orange delete" aria-hidden="true"><i class="fa fa-times fa-lg" aria-hidden="true"></i></button>
 				</div>
-				
+				<div class="plot_row" id="plot_title_row" style="display:none">
+					<input class="ui-corner-all" id="plot_title" />
+					<button class="green" id="ok_plot_title"><i class="fa fa-check fa-lg" aria-hidden="true"></i></button>
+					<button class="orange" id="cancel_plot_title"><i class="fa fa-times fa-lg" aria-hidden="true"></i></button>
+				</div>
 				<fieldset>
 				</fieldset>
 				

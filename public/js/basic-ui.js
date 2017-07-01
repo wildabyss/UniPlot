@@ -252,7 +252,36 @@ var modal_preconstruction = function(){
 	
 	// Rename a plot
 	$('#plot_management_modal button.edit').click(function(){
+		var sel_ind = parseInt($('select#sel_plots').val());
+		if (sel_ind > -1){
+			var title = Plotter.plot_parameters_array[sel_ind].title;
+			
+			$('#plot_management_modal #sel_plots_row').hide(0);
+			$('#plot_management_modal #plot_title_row').show(0);
+			$('#plot_management_modal #plot_title').val(title);
+		}
+	});
+	var showSelectionAgain = function(){
+		// abandon changes
+		$('#plot_management_modal #sel_plots_row').show(0);
+		$('#plot_management_modal #plot_title_row').hide(0);
+	};
+	$('#plot_management_modal #plot_title').keypress(function(e){
+		if(e.which == 13) {
+			$('#plot_management_modal #ok_plot_title').click();
+		}
+	});
+	$('#plot_management_modal #ok_plot_title').click(function(){
+		var sel_ind = parseInt($('select#sel_plots').val());
+		Plotter.plot_parameters_array[sel_ind].title = $('#plot_management_modal #plot_title').val();
 		
+		// redo the selection
+		regeneratePlotSelect(sel_ind);
+		
+		showSelectionAgain();
+	});
+	$('#plot_management_modal #cancel_plot_title').click(function(){
+		showSelectionAgain();
 	});
 	
 	// Remove a plot
