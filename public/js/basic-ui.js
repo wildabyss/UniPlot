@@ -386,6 +386,65 @@ var modal_preconstruction = function(){
 				Plotter.redraw();
 			});
 	});
+	
+	/* Zoom dialog */
+	
+	var zoomEvents = (function(){
+		var coordinates_start = [0,0];
+		var coordinates_end = [0,0];
+		
+		return {
+			start: function(is_horizontal, ev){
+				var target_obj = $(ev.target);
+				coordinates_start[0] = ev.pageX - target_obj.offset().left;
+				coordinates_start[1] = ev.pageY - target_obj.offset().top;
+			},
+			
+			end: function(is_horizontal, ev){
+				$('canvas.plot_main').css('cursor', 'default');
+				
+				var target_obj = $(ev.target);
+				coordinates_end[0] = ev.pageX - target_obj.offset().left;
+				coordinates_end[1] = ev.pageY - target_obj.offset().top;
+				
+				// realize zooming
+				if (is_horizontal){
+					Plotter.zoom_horizontal($(target_obj.parent()).index(), [coordinates_start[0], coordinates_end[0]]);
+				} else {
+					Plotter.zoom_vertical($(target_obj.parent()).index(), [coordinates_start[1], coordinates_end[1]]);
+				}
+				
+				// unbind mouse events
+				$('canvas.plot_main').off('mousedown mouseup');
+			},
+		};
+	})();
+	
+	$('#btn_zoom_x').click(function(){
+		$('#zoom_modal').dialog('close');
+		$('canvas.plot_main')
+			.css('cursor', 'col-resize')
+			.off("mousedown mouseup")
+			.mousedown(function(e){
+				zoomEvents.start(true, e);
+			})
+			.mouseup(function(e){
+				zoomEvents.end(true, e);
+			});
+	});
+	
+	$('#btn_zoom_y').click(function(){
+		$('#zoom_modal').dialog('close');
+		$('canvas.plot_main')
+			.css('cursor', 'row-resize')
+			.off("mousedown mouseup")
+			.mousedown(function(e){
+				zoomEvents.start(false, e);
+			})
+			.mouseup(function(e){
+				zoomEvents.end(false, e);
+			});
+	});
 }
 
 
@@ -488,5 +547,26 @@ $(document).ready(function(){
 			}
 			],
 		});
+	});
+	
+	// zoom button
+	$('.btn_zoom').click(function(){
+		$('#zoom_modal').dialog({
+			dialogClass: "no-close",
+			closeOnEscape: true,
+			resizable: false,
+			draggable: false,
+			title: 'Zoom',
+			modal: true,
+			buttons: [
+			{
+				text: "Close",
+				click: function() {
+					$(this).dialog( "close" );
+				}
+			}
+			],
+		});
+		
 	});
 });
