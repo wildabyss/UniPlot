@@ -1,25 +1,25 @@
 // Shows mobile side menu
-var showMobileMenu = function(){
+function showMobileMenu(){
 	$('#mobile_menu').show("slide", {direction:"left"},300);
 	$('#haze').show();
 	disableScroll();
-};
+}
 // Hides mobile side menu
-var hideMobileMenu = function(){
+function hideMobileMenu(){
 	$('#mobile_menu').hide("slide", {direction:"left"},300);
 	$('#haze').hide();
 	restoreScroll();
-};
+}
 
 // disable page scrolling
-var disableScroll = function(){
+function disableScroll(){
 	$('main').css({
 		'overflow': 'hidden',
 		'height': '100%'
 	});
-};
+}
 // enable page scrolling
-var restoreScroll = function(){
+function restoreScroll(){
 	$('main').css({
 		'overflow': 'auto',
 		'height': 'auto'
@@ -28,7 +28,7 @@ var restoreScroll = function(){
 
 
 // To be evaluated in document.ready function
-var modal_preconstruction = function(){
+function modal_preconstruction(){
 	/* Plots Management Modal */
 	
 	// Update the parameters list for the current plot selection
@@ -396,26 +396,25 @@ var modal_preconstruction = function(){
 		return {
 			start: function(is_horizontal, ev){
 				var target_obj = $(ev.target);
-				coordinates_start[0] = ev.pageX - target_obj.offset().left;
-				coordinates_start[1] = ev.pageY - target_obj.offset().top;
+				coordinates_start[0] = Math.max(0,ev.pageX - target_obj.offset().left);
+				coordinates_start[1] = Math.max(0,ev.pageY - target_obj.offset().top);
 			},
 			
 			end: function(is_horizontal, ev){
-				$('canvas.plot_main').css('cursor', 'default');
+				$('canvas.plot_main')
+					.css('cursor', 'default')
+					.off('mousedown mouseup dblclick');
 				
 				var target_obj = $(ev.target);
-				coordinates_end[0] = ev.pageX - target_obj.offset().left;
-				coordinates_end[1] = ev.pageY - target_obj.offset().top;
+				coordinates_end[0] = Math.max(0,ev.pageX - target_obj.offset().left);
+				coordinates_end[1] = Math.max(0,ev.pageY - target_obj.offset().top);
 				
 				// realize zooming
 				if (is_horizontal){
-					Plotter.zoom_horizontal($(target_obj.parent()).index(), [coordinates_start[0], coordinates_end[0]]);
+					Plotter.zoomHorizontal($(target_obj.parent()).index(), [coordinates_start[0], coordinates_end[0]]);
 				} else {
-					Plotter.zoom_vertical($(target_obj.parent()).index(), [coordinates_start[1], coordinates_end[1]]);
+					Plotter.zoomVertical($(target_obj.parent()).index(), [coordinates_start[1], coordinates_end[1]]);
 				}
-				
-				// unbind mouse events
-				$('canvas.plot_main').off('mousedown mouseup');
 			},
 		};
 	})();
@@ -444,6 +443,20 @@ var modal_preconstruction = function(){
 			.mouseup(function(e){
 				zoomEvents.end(false, e);
 			});
+	});
+	
+	$('#btn_zoom_revert').click(function(){
+		$('#zoom_modal').dialog('close');
+		var canvases = $('canvas.plot_main')
+			.css('cursor', 'default')
+			.off('mousedown mouseup dblclick');
+		
+		for (var i=0; i<canvases.length; i++){
+			Plotter.zoomHorizontal(i, [-1, -1], true);
+			Plotter.zoomVertical(i, [-1, -1], true);
+		}
+		
+		Plotter.redraw();
 	});
 }
 

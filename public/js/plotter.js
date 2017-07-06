@@ -378,7 +378,7 @@ var Plotter = (function(){
 			}
 		},
 		
-		zoom_horizontal: function(canvas_index, zoom_coordinates, no_redraw){			
+		zoomHorizontal: function(canvas_index, zoom_coordinates, no_redraw){			
 			var getBounds = function(x, canvas, plot_parameters){
 				// total canvas dimensions
 				
@@ -392,22 +392,34 @@ var Plotter = (function(){
 				return (x - side_offset)/hor_res_with_offset*(plot_parameters.hor_zoom[1]-plot_parameters.hor_zoom[0]) + plot_parameters.hor_zoom[0];
 			}
 			
-			// convert coords to bounds
-			if (zoom_coordinates[0] == zoom_coordinates[1])
-				return;
 			var canvas = $("canvas.plot_main")[canvas_index];
 			var plot_parameters = this.plot_parameters_array[canvas_index];
 			
-			// set x bounds
-			if (plot_parameters.hor_zoom[0] != 0 || plot_parameters.hor_zoom[1] != 0){
-				var lower_x = getBounds(zoom_coordinates[0], canvas, plot_parameters);
-				var upper_x = getBounds(zoom_coordinates[1], canvas, plot_parameters);
+			if (zoom_coordinates[0] >= 0 && zoom_coordinates[0] == zoom_coordinates[1]){
+				// no zoom command
+				return;
+			} else if (zoom_coordinates[0] < 0 || zoom_coordinates[1] < 0){
+				// revert command
 				if (plot_parameters.xvar == 'time'){
+					var data_sources = this.data_sources;
 					this.plot_parameters_array.forEach(function(el){
-						el.setHorizontalZoom(lower_x, upper_x);
+						el.revertZoom(data_sources, true);
 					});
 				} else {
-					plot_parameters.setHorizontalZoom(lower_x, upper_x);
+					plot_parameters.revertZoom(this.data_sources, true);
+				}
+			} else {
+				// set x bounds
+				if (plot_parameters.hor_zoom[0] != 0 || plot_parameters.hor_zoom[1] != 0){
+					var lower_x = getBounds(zoom_coordinates[0], canvas, plot_parameters);
+					var upper_x = getBounds(zoom_coordinates[1], canvas, plot_parameters);
+					if (plot_parameters.xvar == 'time'){
+						this.plot_parameters_array.forEach(function(el){
+							el.setHorizontalZoom(lower_x, upper_x);
+						});
+					} else {
+						plot_parameters.setHorizontalZoom(lower_x, upper_x);
+					}
 				}
 			}
 			
@@ -417,7 +429,7 @@ var Plotter = (function(){
 				this.redraw();
 		},
 		
-		zoom_vertical: function(canvas_index, zoom_coordinates, no_redraw){
+		zoomVertical: function(canvas_index, zoom_coordinates, no_redraw){
 			var getBounds = function(y, canvas, plot_parameters, is_primary){
 				// total canvas dimensions
 				
@@ -434,23 +446,27 @@ var Plotter = (function(){
 					return (y - top_offset)/vert_res_with_offset*(plot_parameters.sec_vert_zoom[0]-plot_parameters.sec_vert_zoom[1]) + plot_parameters.sec_vert_zoom[1];
 			}
 			
-			// convert coords to bounds
-			if (zoom_coordinates[0] == zoom_coordinates[1])
-				return;
 			var canvas = $("canvas.plot_main")[canvas_index];
 			var plot_parameters = this.plot_parameters_array[canvas_index];
-			
-			// set y bounds
-			if (plot_parameters.pri_vert_zoom[0] != 0 || plot_parameters.pri_vert_zoom[1] != 0){
-				var upper_y = getBounds(zoom_coordinates[0], canvas, plot_parameters, true);
-				var lower_y = getBounds(zoom_coordinates[1], canvas, plot_parameters, true);
-				
-				this.plot_parameters_array[canvas_index].setPriVerticalZoom(lower_y, upper_y);
-			}
-			if (plot_parameters.sec_vert_zoom[0] != 0 || plot_parameters.sec_vert_zoom[1] != 0){
-				var upper_y = getBounds(zoom_coordinates[0], canvas, plot_parameters, false);
-				var lower_y = getBounds(zoom_coordinates[1], canvas, plot_parameters, false);
-				this.plot_parameters_array[canvas_index].setSecVerticalZoom(lower_y, upper_y);
+
+			if (zoom_coordinates[0] >= 0 && zoom_coordinates[0] == zoom_coordinates[1]){
+				// no zoom command
+				return;
+			} else if (zoom_coordinates[0] < 0 || zoom_coordinates[1] < 0) {
+				// revert zoom
+				plot_parameters.revertZoom(this.data_sources, false);
+			} else {
+				// set y bounds
+				if (plot_parameters.pri_vert_zoom[0] != 0 || plot_parameters.pri_vert_zoom[1] != 0){
+					var upper_y = getBounds(zoom_coordinates[0], canvas, plot_parameters, true);
+					var lower_y = getBounds(zoom_coordinates[1], canvas, plot_parameters, true);
+					plot_parameters.setPriVerticalZoom(lower_y, upper_y);
+				}
+				if (plot_parameters.sec_vert_zoom[0] != 0 || plot_parameters.sec_vert_zoom[1] != 0){
+					var upper_y = getBounds(zoom_coordinates[0], canvas, plot_parameters, false);
+					var lower_y = getBounds(zoom_coordinates[1], canvas, plot_parameters, false);
+					plot_parameters.setSecVerticalZoom(lower_y, upper_y);
+				}
 			}
 		
 			if (no_redraw === undefined)
