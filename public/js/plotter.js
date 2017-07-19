@@ -101,7 +101,7 @@ var Plotter = (function(){
 		var num_active_sources = 0;
 		var N_primary = 0, N_secondary = 0;
 		var active_once = false;
-		for (parameter_name in plot_parameters.parameters){
+		for (var parameter_name in plot_parameters.parameters){
 			// skip the primary variables
 			if (parameter_name == plot_parameters.xvar || parameter_name == time)
 				continue;
@@ -110,7 +110,7 @@ var Plotter = (function(){
 			var parameter = plot_parameters.parameters[parameter_name];
 
 			var file_counter = 0;
-			for (source_name in data_sources){
+			for (var source_name in data_sources){
 				var data_source = data_sources[source_name];
 				if (!data_source.active || !data_source.data.hasOwnProperty(parameter_name))
 					continue;
@@ -240,13 +240,13 @@ var Plotter = (function(){
 		
 		ctx.setLineDash([]);
 		N_primary = 0; N_secondary = 0;
-		for (parameter_name in plot_parameters.parameters){
+		for (var parameter_name in plot_parameters.parameters){
 			// skip the primary variables
 			if (parameter_name == plot_parameters.xvar || parameter_name == time)
 				continue;
 				
 			var file_counter = 0;
-			for (source_name in data_sources){
+			for (var source_name in data_sources){
 				var data_source = data_sources[source_name];
 				if (!data_source.active || !data_source.data.hasOwnProperty(parameter_name))
 					continue;
