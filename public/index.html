@@ -3,7 +3,7 @@
 	<head>
 		<!-- content type -->
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 		<meta http-equiv="Content-Style-Type" content="text/css">
 		
 		<!-- layout and styles -->
@@ -19,8 +19,8 @@
 		<script src="./js/jquery.min.js"></script>
 		<script src="./js/jquery-ui.min.js"></script>
 		<!-- Anpur's LineNavigator class for reading File line by line -->
-		<script src="./js/file-wrapper.min.js"></script>
-		<script src="./js/line-navigator.min.js"></script>	
+		<script src="./js/LineNavigator/file-wrapper.min.js"></script>
+		<script src="./js/LineNavigator/line-navigator.min.js"></script>	
 		
 		<script src="./js/utils.js"></script>
 		<script src="./js/basic-ui.js"></script>
@@ -30,7 +30,7 @@
 		<div id="haze" class="ui-widget-overlay"></div>
 		<div id="global">
 			<header>
-				<div id="mobile_menu_trigger"></div>
+				<div id="mobile_menu_trigger"><i class="fa fa-bars fa-lg" aria-hidden="true"></i></div>
 				<a class="logo">UniPlot</a>
 				
 				<ul id="top_menu" class="button_group">
@@ -70,6 +70,14 @@
 					<li><button class="blue" id="btn_save_session">Session</button></li>
 					<li><button class="blue" id="btn_save_template">Template</button></li>
 					<li><button class="blue" id="btn_save_pdf">PDF</button></li>
+				</ul>
+			</aside>
+			
+			<aside class="modal_container" id="zoom_modal">
+				<ul class="button_group modal_button_group">
+					<li><button class="blue" id="btn_zoom_x">X-Axis</button></li>
+					<li><button class="blue" id="btn_zoom_y">Y-Axis</button></li>
+					<li><button class="blue" id="btn_zoom_revert">Revert</button></li>
 				</ul>
 			</aside>
 			

@@ -140,12 +140,17 @@ PlotParameters.prototype.setZoomOnParameter = function(data_sources, parameter_n
 /**
  * Revert zoom levels to the maximum bounds that data allow
  */
-PlotParameters.prototype.revertZoom = function(data_sources){
-	this.setHorizontalZoom(0,0);
-	this.setPriVerticalZoom(0,0);
-	this.setSecVerticalZoom(0,0);
+PlotParameters.prototype.revertZoom = function(data_sources, horizontal_only){
+	if (horizontal_only == undefined || horizontal_only)
+		this.setHorizontalZoom(0,0);
+	if (horizontal_only == undefined || !horizontal_only){
+		this.setPriVerticalZoom(0,0);
+		this.setSecVerticalZoom(0,0);
+	}
 
 	for (parameter_name in this.parameters){
-		this.setZoomOnParameter(data_sources, parameter_name);
+		if (horizontal_only == undefined || (horizontal_only && parameter_name == this.xvar)
+			|| (!horizontal_only && parameter_name != this.xvar))
+			this.setZoomOnParameter(data_sources, parameter_name);
 	}
 };

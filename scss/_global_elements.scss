@@ -20,6 +20,10 @@ header{
 	font-size: 20px;
 	display: flex;
 	
+	#mobile_menu_trigger{
+		display: none;
+	}
+	
 	a.logo{
 		background-color: $almostBlack;
 		color: $lightGrey;
@@ -63,13 +67,11 @@ header{
 		}
 	
 		#mobile_menu_trigger{
-			background-image: url("../imgs/menu_burger.png");
-			background-repeat: no-repeat;
-			background-position: center center;
-			width: 40px;
-			height: 50px;
+			display: block;
 			float: left;
 			cursor: pointer;
+			padding-left: 7px;
+			padding-right: 7px;
 		}
 		
 		ul#mobile_menu{
