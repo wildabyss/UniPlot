@@ -1,3 +1,5 @@
+"use strict";
+
 // Shows mobile side menu
 function showMobileMenu(){
 	$('#mobile_menu').show("slide", {direction:"left"},300);
